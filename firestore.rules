@@ -1,0 +1,128 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: users
+    // Document ID: uid
+    // Fields:
+    //   - uid: string (required)
+    //   - email: string (required, email format)
+    //   - role: string (required, enum: ['admin', 'customer'])
+    //
+    // Collection: shipments
+    // Document ID: shipmentId (trackingId)
+    // Fields:
+    //   - trackingId: string (required)
+    //   - type: string (required, enum: ['Flight', 'Shipment'])
+    //   - status: string (required, enum: ['Pending', 'In Transit', 'Custom Clearance', 'Delivered'])
+    //   - history: list (optional, list of objects with status, timestamp, location, photoUrl, description)
+    //   - customerEmail: string (required, email format)
+    //   - userId: string (optional)
+    //   - origin: string (required)
+    //   - destination: string (required)
+    //   - createdAt: timestamp (required)
+    //   - updatedAt: timestamp (required)
+    //
+    // Collection: tickets
+    // Document ID: ticketId
+    // Fields:
+    //   - shipmentId: string (optional)
+    //   - customerId: string (required)
+    //   - messages: list (required, list of objects with sender, text, timestamp)
+    //   - status: string (required, enum: ['open', 'closed'])
+    //   - createdAt: timestamp (required)
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+          (request.auth.token.email == "pastorjohn046@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    function isValidEmail(email) {
+      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidUser(data) {
+      return hasOnlyAllowedFields(['uid', 'email', 'role']) &&
+             data.uid is string && data.uid.size() > 0 &&
+             data.email is string && isValidEmail(data.email) &&
+             data.role in ['admin', 'customer'];
+    }
+
+    function isValidShipment(data) {
+      return hasRequiredFields(['trackingId', 'type', 'status', 'customerEmail', 'origin', 'destination', 'createdAt', 'updatedAt']) &&
+             data.trackingId is string && data.trackingId.size() > 0 &&
+             data.type in ['Flight', 'Shipment'] &&
+             data.status in ['Pending', 'In Transit', 'Custom Clearance', 'Delivered'] &&
+             isValidEmail(data.customerEmail) &&
+             data.origin is string && data.destination is string &&
+             data.createdAt is timestamp && data.updatedAt is timestamp;
+    }
+
+    function isValidTicket(data) {
+      return hasRequiredFields(['customerId', 'messages', 'status', 'createdAt']) &&
+             data.customerId is string &&
+             data.messages is list &&
+             data.status in ['open', 'closed'] &&
+             data.createdAt is timestamp;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isAuthenticated() && isValidUser(request.resource.data) && (isOwner(userId) || isAdmin());
+      allow update: if isAuthenticated() && isValidUser(request.resource.data) && (isAdmin() || (isOwner(userId) && request.resource.data.role == resource.data.role));
+    }
+
+    match /shipments/{shipmentId} {
+      // Allow public read by tracking ID, and also allow users to list their own shipments
+      allow read: if true;
+      allow create, update: if isAdmin() && isValidShipment(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    match /tickets/{ticketId} {
+      allow read: if isAdmin() || (isAuthenticated() && resource.data.customerId == request.auth.uid);
+      allow create: if isAuthenticated() && isValidTicket(request.resource.data) && (request.resource.data.customerId == request.auth.uid || isAdmin());
+      allow update: if (isAdmin() || (isAuthenticated() && resource.data.customerId == request.auth.uid)) && isValidTicket(request.resource.data);
+    }
+
+    // Default deny
+    match /{path=**} {
+      allow read, write: if false;
+    }
+  }
+}
