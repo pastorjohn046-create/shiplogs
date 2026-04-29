@@ -74,6 +74,7 @@ export default function Support() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: newMessage.trim() }),
+        credentials: 'include'
       });
       if (response.ok) {
         setNewMessage('');
@@ -93,6 +94,7 @@ export default function Support() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: newTicketText.trim() }),
+        credentials: 'include'
       });
       if (response.ok) {
         setIsNewTicketModalOpen(false);
@@ -155,7 +157,7 @@ export default function Support() {
           <button onClick={() => navigate('/')} className="p-3 hover:bg-white/10 rounded-xl transition-colors">
             <ArrowLeft className="w-6 h-6" />
           </button>
-          <h1 className="text-xl font-black uppercase tracking-tighter italic">Support <span className="text-orange-500">Center</span></h1>
+          <h1 className="text-xl font-black uppercase tracking-tighter italic">Nexus <span className="text-orange-500">Support</span></h1>
         </div>
         <button 
           onClick={() => setIsNewTicketModalOpen(true)}

@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Home, Package, User, Settings, Info } from 'lucide-react';
+import { Home, Package, User, Globe, History, Shield } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useAuth } from '../App';
 
@@ -10,15 +10,10 @@ export default function BottomNav() {
 
   const navItems = [
     { icon: Home, label: 'Home', path: '/' },
-    { icon: Package, label: 'Track', path: '/track/search' },
-    { icon: user ? User : Settings, label: user ? 'Dashboard' : 'Login', path: user ? '/dashboard' : '/login' },
+    { icon: Globe, label: 'News', path: '/news' },
+    { icon: user ? History : Package, label: user ? 'Updates' : 'Track', path: user ? '/updates' : '/' },
+    { icon: user ? (isAdmin ? Shield : User) : User, label: user ? (isAdmin ? 'Admin' : 'Profile') : 'Login', path: user ? (isAdmin ? '/admin' : '/profile') : '/login' },
   ];
-
-  if (isAdmin) {
-    navItems.push({ icon: Settings, label: 'Admin', path: '/admin' });
-  } else {
-    navItems.push({ icon: Info, label: 'About', path: '/about' });
-  }
 
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-xl border-t border-gray-100 px-6 py-3 z-[90] flex items-center justify-between pb-safe">

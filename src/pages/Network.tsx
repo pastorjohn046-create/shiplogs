@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Globe, MapPin, Truck, Plane, Ship, ArrowLeft, Zap, ShieldCheck } from 'lucide-react';
+import { Globe, MapPin, Truck, Plane, Ship, ArrowLeft, Zap, ShieldCheck, Shield } from 'lucide-react';
 import { motion } from 'motion/react';
 
 const hubs = [
@@ -26,10 +26,10 @@ export default function Network() {
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/')}>
             <div className="bg-[#001f3f] p-2 rounded-xl">
-              <Zap className="w-6 h-6 text-white" />
+              <Shield className="w-6 h-6 text-white" />
             </div>
             <span className="text-xl font-black tracking-tighter uppercase text-[#001f3f]">
-              Swift<span className="text-orange-500">Tracks</span>
+              Nexus<span className="text-orange-500">Logistics</span>
             </span>
           </div>
           <button 
@@ -148,11 +148,11 @@ export default function Network() {
         <div className="max-w-7xl mx-auto text-center">
           <div className="flex items-center justify-center gap-2 mb-8">
             <div className="bg-orange-500 p-2 rounded-xl">
-              <Zap className="w-6 h-6 text-white" />
+              <Shield className="w-6 h-6 text-[#001f3f]" />
             </div>
-            <span className="text-2xl font-black tracking-tighter uppercase">Swift<span className="text-orange-500">Tracks</span></span>
+            <span className="text-2xl font-black tracking-tighter uppercase">Nexus<span className="text-orange-500">Logistics</span></span>
           </div>
-          <p className="text-gray-500 text-xs font-black uppercase tracking-widest">© 2026 SwiftTracks Logistics. All rights reserved.</p>
+          <p className="text-gray-500 text-xs font-black uppercase tracking-widest">© 2026 Nexus Logistics. All rights reserved.</p>
         </div>
       </footer>
     </div>

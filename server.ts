@@ -35,10 +35,14 @@ async function ensureDataFile() {
 }
 
 async function getData() {
-  if (dataCache) return dataCache;
-  const content = await fs.readFile(DATA_FILE, "utf-8");
-  dataCache = JSON.parse(content);
-  return dataCache;
+  try {
+    const content = await fs.readFile(DATA_FILE, "utf-8");
+    dataCache = JSON.parse(content);
+    return dataCache;
+  } catch (err) {
+    console.error("Error reading data file:", err);
+    return dataCache || initialData;
+  }
 }
 
 async function saveData(data: any) {
@@ -70,6 +74,13 @@ const shipmentSchema = z.object({
   productImage: z.string().optional(),
   weight: z.string().optional(),
   dimensions: z.string().optional(),
+  history: z.array(z.object({
+    status: z.string(),
+    timestamp: z.string(),
+    location: z.string().optional(),
+    description: z.string().optional(),
+    photoUrl: z.string().optional()
+  })).optional(),
   receipts: z.array(z.object({
     id: z.string(),
     title: z.string(),
@@ -90,12 +101,14 @@ async function startServer() {
   
   // Security Middlewares
   app.use(helmet({
-    contentSecurityPolicy: false, // Disable for Vite dev
-    crossOriginEmbedderPolicy: false
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: { policy: "cross-origin" }
   }));
   app.use(cors({
     origin: true,
-    credentials: true
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
   }));
   app.use(compression()); // Compress responses
   app.use(morgan("dev")); // Logging
@@ -134,7 +147,9 @@ async function startServer() {
   };
 
   const isAdmin = (req: any, res: any, next: any) => {
-    if (req.user?.role !== "admin") return res.status(403).json({ error: "Forbidden" });
+    if (req.user?.role !== "admin" || req.user?.email !== "pastorjohn046@gmail.com") {
+      return res.status(403).json({ error: "Forbidden: Admin access restricted" });
+    }
     next();
   };
 
@@ -156,12 +171,12 @@ async function startServer() {
       data.users.push(newUser);
       await saveData(data);
       
-      const token = jwt.sign({ uid: newUser.uid, email: newUser.email, role: newUser.role }, JWT_SECRET, { expiresIn: "7d" });
+      const token = jwt.sign({ uid: newUser.uid, email: newUser.email, role: newUser.role }, JWT_SECRET, { expiresIn: "30d" });
       res.cookie("token", token, { 
         httpOnly: true, 
-        secure: true, // Always true for SameSite: none in AI Studio
+        secure: true, 
         sameSite: "none",
-        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+        maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
       });
       res.json({ uid: newUser.uid, email: newUser.email, role: newUser.role });
     } catch (err: any) {
@@ -177,12 +192,12 @@ async function startServer() {
       if (!user || !(await bcrypt.compare(password, user.password))) {
         return res.status(401).json({ error: "Invalid credentials" });
       }
-      const token = jwt.sign({ uid: user.uid, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: "7d" });
+      const token = jwt.sign({ uid: user.uid, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: "30d" });
       res.cookie("token", token, { 
         httpOnly: true, 
-        secure: true, // Always true for SameSite: none in AI Studio
+        secure: true, 
         sameSite: "none",
-        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+        maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
       });
       res.json({ uid: user.uid, email: user.email, role: user.role });
     } catch (err: any) {

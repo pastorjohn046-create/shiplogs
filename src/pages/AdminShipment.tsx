@@ -32,12 +32,16 @@ export default function AdminShipment() {
   const fetchShipment = async () => {
     if (!id) return;
     try {
-      const response = await fetch(`/api/shipments/${id}`);
+      const response = await fetch(`/api/shipments/${id}`, {
+        credentials: 'include'
+      });
       if (response.ok) {
         const data = await response.json();
         setShipment(data);
         setNewStatus(data.status);
         setLocation(data.status === 'Delivered' ? data.destination : '');
+      } else {
+        throw new Error(`HTTP ${response.status}`);
       }
     } catch (error) {
       console.error('Error fetching shipment:', error);
@@ -91,6 +95,7 @@ export default function AdminShipment() {
           status: newStatus,
           history: [...shipment.history, newHistoryItem]
         }),
+        credentials: 'include'
       });
 
       if (response.ok) {
@@ -99,9 +104,13 @@ export default function AdminShipment() {
         setPhotoPreview(null);
         setDescription('');
         setLocation('');
+      } else {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.error || `HTTP ${response.status}`);
       }
     } catch (error) {
       console.error('Error updating shipment:', error);
+      alert(error instanceof Error ? error.message : 'Update failed');
     } finally {
       setUpdating(false);
     }
@@ -114,6 +123,7 @@ export default function AdminShipment() {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updates),
+        credentials: 'include'
       });
       if (response.ok) {
         await fetchShipment();
@@ -141,6 +151,7 @@ export default function AdminShipment() {
         body: JSON.stringify({
           receipts: [...(shipment.receipts || []), receipt]
         }),
+        credentials: 'include'
       });
 
       if (response.ok) {
@@ -163,6 +174,7 @@ export default function AdminShipment() {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ receipts: updatedReceipts }),
+        credentials: 'include'
       });
       if (response.ok) {
         await fetchShipment();
@@ -190,8 +202,8 @@ export default function AdminShipment() {
             <ArrowLeft className="w-6 h-6" />
           </button>
           <div>
-            <h1 className="text-xl font-black uppercase tracking-tighter italic">Update <span className="text-orange-500">Shipment</span></h1>
-            <p className="text-[10px] font-black text-gray-400 tracking-widest uppercase mt-1">{shipment.trackingId}</p>
+            <h1 className="text-xl font-black uppercase tracking-tighter italic">Nexus <span className="text-orange-500">Logistics</span></h1>
+            <p className="text-[10px] font-black text-gray-400 tracking-widest uppercase mt-1">Admin Portal • {shipment.trackingId}</p>
           </div>
         </div>
       </nav>
@@ -199,9 +211,9 @@ export default function AdminShipment() {
       <main className="max-w-6xl mx-auto px-6 mt-12 grid grid-cols-1 lg:grid-cols-3 gap-12">
         {/* Update Form */}
         <div className="lg:col-span-2 space-y-10">
-          <div className="bg-white rounded-[3rem] shadow-2xl border border-gray-100 p-12 relative overflow-hidden">
+          <div className="bg-white rounded-3xl md:rounded-[3rem] shadow-2xl border border-gray-100 p-6 md:p-12 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/5 rounded-full -mr-16 -mt-16 blur-3xl" />
-            <h2 className="text-2xl font-black text-[#001f3f] mb-10 flex items-center gap-4 uppercase tracking-tighter italic">
+            <h2 className="text-xl md:text-2xl font-black text-[#001f3f] mb-8 md:mb-10 flex items-center gap-4 uppercase tracking-tighter italic">
               <div className="bg-[#001f3f] p-3 rounded-2xl shadow-xl rotate-3">
                 <Package className="w-6 h-6 text-orange-500" />
               </div>
@@ -233,9 +245,9 @@ export default function AdminShipment() {
             </div>
           </div>
 
-          <div className="bg-white rounded-[3rem] shadow-2xl border border-gray-100 p-12 relative overflow-hidden">
+          <div className="bg-white rounded-3xl md:rounded-[3rem] shadow-2xl border border-gray-100 p-6 md:p-12 relative overflow-hidden">
             <div className="absolute bottom-0 left-0 w-32 h-32 bg-orange-500/5 rounded-full -ml-16 -mb-16 blur-3xl" />
-            <h2 className="text-2xl font-black text-[#001f3f] mb-10 flex items-center gap-4 uppercase tracking-tighter italic">
+            <h2 className="text-xl md:text-2xl font-black text-[#001f3f] mb-8 md:mb-10 flex items-center gap-4 uppercase tracking-tighter italic">
               <div className="bg-orange-500 p-3 rounded-2xl shadow-xl -rotate-3">
                 <Truck className="w-6 h-6 text-white" />
               </div>
@@ -330,8 +342,8 @@ export default function AdminShipment() {
           </div>
 
           {/* History Preview */}
-          <div className="bg-white rounded-[3rem] shadow-2xl border border-gray-100 p-12">
-            <h3 className="text-2xl font-black text-[#001f3f] mb-10 uppercase tracking-tighter italic">Shipment <span className="text-orange-500">History</span></h3>
+          <div className="bg-white rounded-3xl md:rounded-[3rem] shadow-2xl border border-gray-100 p-6 md:p-12">
+            <h3 className="text-xl md:text-2xl font-black text-[#001f3f] mb-8 md:mb-10 uppercase tracking-tighter italic">Shipment <span className="text-orange-500">History</span></h3>
             <div className="space-y-10">
               {(shipment.history || []).slice().reverse().map((event, i) => (
                 <div key={i} className="flex gap-8 group">
@@ -359,9 +371,9 @@ export default function AdminShipment() {
           </div>
 
           {/* Receipts Section */}
-          <div className="bg-white rounded-[3rem] shadow-2xl border border-gray-100 p-12 relative overflow-hidden">
+          <div className="bg-white rounded-3xl md:rounded-[3rem] shadow-2xl border border-gray-100 p-6 md:p-12 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full -mr-16 -mt-16 blur-3xl" />
-            <h2 className="text-2xl font-black text-[#001f3f] mb-10 flex items-center gap-4 uppercase tracking-tighter italic">
+            <h2 className="text-xl md:text-2xl font-black text-[#001f3f] mb-8 md:mb-10 flex items-center gap-4 uppercase tracking-tighter italic">
               <div className="bg-[#001f3f] p-3 rounded-2xl shadow-xl rotate-3">
                 <FileText className="w-6 h-6 text-orange-500" />
               </div>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../App';
 import { Shipment } from '../types';
-import { Package, Truck, Plane, ChevronRight, User, Mail, LogOut, Plus, Search, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Package, Truck, Plane, ChevronRight, User, Mail, LogOut, Plus, Search, CheckCircle2, AlertCircle, History, Globe, Shield } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { motion } from 'motion/react';
@@ -54,6 +54,7 @@ export default function Dashboard() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ trackingId: claimTrackingId.trim() }),
+        credentials: 'include'
       });
 
       const data = await response.json();
@@ -87,11 +88,18 @@ export default function Dashboard() {
         <div className="mb-8 md:mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
             <h1 className="text-4xl md:text-5xl font-black text-[#001f3f] uppercase tracking-tighter italic">
-              My <span className="text-orange-500">Dashboard</span>
+              Nexus <span className="text-orange-500">Console</span>
             </h1>
             <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px] mt-2">Manage your profile and track active shipments</p>
           </div>
           <div className="flex flex-row items-center gap-3 md:gap-4">
+            <button 
+              onClick={() => navigate('/profile')}
+              className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-white text-[#001f3f] px-4 md:px-6 py-3 rounded-xl md:rounded-2xl font-black uppercase tracking-widest text-[10px] md:text-xs border border-gray-100 hover:bg-gray-50 transition-all shadow-sm"
+            >
+              <User className="w-3 h-3 md:w-4 md:h-4" />
+              Profile
+            </button>
             {user.role === 'admin' && (
               <button 
                 onClick={() => navigate('/admin')}
@@ -110,9 +118,9 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Profile Card */}
-          <div className="lg:col-span-1">
+        <div className="flex flex-col lg:grid lg:grid-cols-3 gap-8">
+          {/* Profile Column second on mobile */}
+          <div className="order-2 lg:order-1 lg:col-span-1">
             <div className="bg-white rounded-3xl md:rounded-[2.5rem] shadow-xl border border-gray-100 p-6 md:p-8 sticky top-24 overflow-hidden">
               <div className="absolute top-0 left-0 w-full h-2 bg-orange-500"></div>
               
@@ -127,18 +135,21 @@ export default function Dashboard() {
               </div>
 
               <div className="space-y-6">
-                <div className="group">
-                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">Email Address</label>
-                  <div className="flex items-center gap-4 bg-gray-50 p-4 rounded-2xl border border-transparent group-hover:border-orange-500/20 transition-all">
-                    <Mail className="w-5 h-5 text-orange-500" />
-                    <span className="text-sm font-bold text-[#001f3f]">{user.email}</span>
+                <Link to="/profile" className="block group">
+                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1 cursor-pointer">Email Address</label>
+                  <div className="flex items-center justify-between bg-gray-50 p-4 rounded-2xl border border-transparent group-hover:border-orange-500/20 transition-all">
+                    <div className="flex items-center gap-4">
+                      <Mail className="w-5 h-5 text-orange-500" />
+                      <span className="text-sm font-bold text-[#001f3f]">{user.email}</span>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-gray-200 group-hover:text-orange-500 transition-colors" />
                   </div>
-                </div>
+                </Link>
                 <div className="group">
                   <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">Account ID</label>
                   <div className="flex items-center gap-4 bg-gray-50 p-4 rounded-2xl border border-transparent group-hover:border-orange-500/20 transition-all">
                     <User className="w-5 h-5 text-orange-500" />
-                    <span className="text-sm font-bold text-[#001f3f]">{user.uid}</span>
+                    <span className="text-sm font-bold text-[#001f3f]">{user.uid?.slice(0, 8)}...</span>
                   </div>
                 </div>
               </div>
@@ -156,6 +167,24 @@ export default function Dashboard() {
                     <div className="text-[10px] font-black uppercase tracking-widest text-orange-400 mt-1">Active</div>
                   </div>
                 </div>
+              </div>
+
+              <div className="mt-10 pt-8 border-t border-gray-50 space-y-4">
+                <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4 italic">Quick Actions</h3>
+                <Link to="/updates" className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl hover:bg-[#001f3f] hover:text-white transition-all group">
+                  <div className="flex items-center gap-4">
+                    <History className="w-5 h-5 text-orange-500" />
+                    <span className="text-sm font-bold uppercase tracking-tight">Consignment Updates</span>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-orange-500" />
+                </Link>
+                <Link to="/news" className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl hover:bg-[#001f3f] hover:text-white transition-all group">
+                  <div className="flex items-center gap-4">
+                    <Globe className="w-5 h-5 text-orange-500" />
+                    <span className="text-sm font-bold uppercase tracking-tight">Global Dispatch</span>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-orange-500" />
+                </Link>
               </div>
 
               {/* Claim Shipment Form */}
@@ -196,8 +225,8 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Shipments List */}
-          <div className="lg:col-span-2">
+          {/* Action/Shipments Column first on mobile */}
+          <div className="order-1 lg:order-2 lg:col-span-2">
             <div className="bg-white rounded-3xl md:rounded-[2.5rem] shadow-xl border border-gray-100 overflow-hidden">
               <div className="p-6 md:p-8 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
                 <h3 className="text-lg md:text-xl font-black text-[#001f3f] uppercase tracking-tight italic">Recent Shipments</h3>

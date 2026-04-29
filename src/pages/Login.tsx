@@ -42,7 +42,7 @@ export default function Login() {
         </div>
 
         <h1 className="text-4xl font-black text-center mb-2 uppercase tracking-tighter italic">
-          Swift <span className="text-orange-500">Tracks</span>
+          Nexus <span className="text-orange-500">Logistics</span>
         </h1>
         <p className="text-gray-400 text-center mb-10 font-bold uppercase tracking-widest text-[10px]">
           {isRegistering ? 'Create your global account' : 'Sign in to your dashboard'}

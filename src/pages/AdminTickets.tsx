@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Ticket, Message } from '../types';
-import { MessageSquare, ArrowLeft, Send, CheckCircle2, User, LayoutDashboard, LogOut, Truck, Menu, X, Zap } from 'lucide-react';
+import { MessageSquare, ArrowLeft, Send, CheckCircle2, User, LayoutDashboard, LogOut, Truck, Menu, X, Zap, Shield } from 'lucide-react';
 import { format } from 'date-fns';
 import { useAuth } from '../App';
 
@@ -66,6 +66,7 @@ export default function AdminTickets() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: reply.trim() }),
+        credentials: 'include'
       });
       if (response.ok) {
         setReply('');
@@ -82,6 +83,7 @@ export default function AdminTickets() {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: 'closed' }),
+        credentials: 'include'
       });
       if (response.ok) {
         fetchTickets();
@@ -119,9 +121,9 @@ export default function AdminTickets() {
       <div className="md:hidden bg-[#001f3f] text-white p-4 flex items-center justify-between sticky top-0 z-[60] shadow-lg">
         <div className="flex items-center gap-2">
           <div className="bg-orange-500 p-1.5 rounded-lg">
-            <Zap className="w-5 h-5 text-white" />
+            <Shield className="w-5 h-5 text-[#001f3f]" />
           </div>
-          <span className="text-lg font-black tracking-tighter uppercase">Swift<span className="text-orange-500">Tracks</span></span>
+          <span className="text-lg font-black tracking-tighter uppercase">Nexus<span className="text-orange-500">Logistics</span></span>
         </div>
         <div className="flex items-center gap-2">
           {selectedTicket && (
@@ -148,9 +150,9 @@ export default function AdminTickets() {
       `}>
         <div className="p-8 hidden md:flex items-center gap-3 border-b border-white/10">
           <div className="bg-orange-500 p-2 rounded-xl">
-            <Zap className="w-6 h-6 text-white" />
+            <Shield className="w-6 h-6 text-[#001f3f]" />
           </div>
-          <span className="text-xl font-black tracking-tighter uppercase">Swift<span className="text-orange-500">Tracks</span></span>
+          <span className="text-xl font-black tracking-tighter uppercase">Nexus<span className="text-orange-500">Logistics</span></span>
         </div>
         
         <nav className="flex-1 p-6 space-y-2">
@@ -202,7 +204,7 @@ export default function AdminTickets() {
       <main className="flex-1 flex flex-col h-[calc(100vh-64px)] md:h-screen overflow-hidden">
         <header className="p-6 md:p-12 bg-white border-b border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center shadow-sm gap-4">
           <div>
-            <h1 className="text-2xl md:text-4xl font-black text-[#001f3f] tracking-tighter mb-1 md:mb-2 uppercase italic">Support <span className="text-orange-500">Center</span></h1>
+            <h1 className="text-2xl md:text-4xl font-black text-[#001f3f] tracking-tighter mb-1 md:mb-2 uppercase italic">Nexus <span className="text-orange-500">Support</span></h1>
             <p className="text-gray-400 font-bold uppercase tracking-widest text-[8px] md:text-[10px]">Manage customer inquiries and elite support tickets</p>
           </div>
           <div className="hidden md:flex gap-6">

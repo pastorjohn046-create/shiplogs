@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Package, Truck, ShieldCheck, Clock, Globe, Zap, BarChart3, Users, ArrowRight, Plane, Ship, MapPin, MessageSquare, Menu, X as CloseIcon } from 'lucide-react';
+import { Search, Package, Truck, ShieldCheck, Clock, Globe, Zap, BarChart3, Users, ArrowRight, Plane, Ship, MapPin, MessageSquare, Menu, X as CloseIcon, Shield } from 'lucide-react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'motion/react';
 import { useAuth } from '../App';
 
@@ -66,14 +66,14 @@ export default function Home() {
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2 cursor-pointer group" onClick={() => navigate('/')}>
             <motion.div 
-              whileHover={{ rotate: 360 }}
+              whileHover={{ rotate: 180 }}
               transition={{ duration: 0.5 }}
               className="bg-[#001f3f] p-2 rounded-xl"
             >
-              <Zap className="w-6 h-6 text-white" />
+              <Shield className="w-6 h-6 text-orange-500" />
             </motion.div>
             <span className={`text-xl font-black tracking-tighter uppercase ${isScrolled ? 'text-[#001f3f]' : 'text-white'}`}>
-              Swift<span className="text-orange-500">Tracks</span>
+              Nexus<span className={isScrolled ? 'text-orange-600' : 'text-orange-500'}>Logistics</span>
             </span>
           </div>
           <div className="flex items-center gap-8">
@@ -231,35 +231,35 @@ export default function Home() {
             <span className="text-orange-500 text-[10px] md:text-xs font-black uppercase tracking-[0.3em]">Next-Gen Logistics</span>
           </motion.div>
           
-          <h1 className="text-4xl md:text-[120px] font-black text-white mb-6 md:mb-8 leading-[0.85] uppercase tracking-tighter italic">
+          <h1 className="text-5xl md:text-[120px] font-black text-white mb-6 md:mb-8 leading-[0.85] uppercase tracking-tighter italic">
             The Future <br />
             <span className="text-orange-500">of Delivery</span>
           </h1>
           
-          <p className="text-lg md:text-xl text-gray-400 mb-10 md:mb-12 max-w-2xl mx-auto font-medium leading-relaxed">
+          <p className="text-base md:text-xl text-gray-400 mb-10 md:mb-12 max-w-2xl mx-auto font-medium leading-relaxed px-4 md:px-0">
             Revolutionizing global supply chains with real-time intelligence, 
             unmatched security, and a network that never sleeps.
           </p>
 
-          <form onSubmit={handleSearch} className="relative group max-w-3xl mx-auto w-full">
-            <div className="absolute -inset-2 md:-inset-4 bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl md:rounded-[2rem] blur-2xl opacity-20 group-hover:opacity-40 transition duration-1000"></div>
-            <div className="relative flex flex-col md:flex-row items-center bg-white rounded-2xl md:rounded-[2rem] shadow-2xl overflow-hidden p-2 md:p-3 border border-white/10">
-              <div className="flex-1 flex items-center w-full px-4">
-                <Package className="w-5 h-5 md:w-6 md:h-6 text-gray-400 mr-3 md:mr-4" />
+          <form onSubmit={handleSearch} className="relative group max-w-3xl mx-auto w-full px-2 md:px-0">
+            <div className="absolute -inset-2 md:-inset-4 bg-gradient-to-r from-orange-500 to-orange-600 rounded-3xl md:rounded-[2rem] blur-2xl opacity-20 group-hover:opacity-40 transition duration-1000"></div>
+            <div className="relative flex flex-col md:flex-row items-center bg-white rounded-3xl md:rounded-[2.5rem] shadow-2xl overflow-hidden p-2 md:p-3 border border-white/10">
+              <div className="flex-1 flex items-center w-full px-4 md:px-6">
+                <Package className="w-6 h-6 text-gray-400 mr-3 md:mr-4" />
                 <input
                   type="text"
                   placeholder="TRACKING ID"
                   value={trackingId}
                   onChange={(e) => setTrackingId(e.target.value)}
-                  className="w-full py-4 md:py-5 text-lg md:text-xl text-[#001f3f] outline-none font-black placeholder:text-gray-300 placeholder:font-bold uppercase tracking-tight"
+                  className="w-full py-5 md:py-6 text-xl md:text-2xl text-[#001f3f] outline-none font-black placeholder:text-gray-300 placeholder:font-bold uppercase tracking-tight"
                 />
               </div>
               <button
                 type="submit"
-                className="w-full md:w-auto bg-[#001f3f] text-white px-8 md:px-10 py-4 md:py-5 rounded-xl md:rounded-[1.5rem] font-black uppercase tracking-widest hover:bg-orange-500 transition-all flex items-center justify-center gap-3 group/btn"
+                className="w-full md:w-auto bg-[#001f3f] text-white px-8 md:px-12 py-5 md:py-6 rounded-2xl md:rounded-[2rem] font-black uppercase tracking-widest hover:bg-orange-500 transition-all flex items-center justify-center gap-3 group/btn shadow-xl md:shadow-none"
               >
                 <span>Track</span>
-                <ArrowRight className="w-5 h-5 group-hover/btn:translate-x-1 transition-transform" />
+                <ArrowRight className="w-6 h-6 group-hover/btn:translate-x-1 transition-transform" />
               </button>
             </div>
           </form>
@@ -514,9 +514,9 @@ export default function Home() {
             <div className="col-span-1 md:col-span-2">
               <div className="flex items-center gap-2 mb-8">
                 <div className="bg-orange-500 p-2 rounded-xl">
-                  <Zap className="w-6 h-6 text-white" />
+                  <Shield className="w-6 h-6 text-[#001f3f]" />
                 </div>
-                <span className="text-2xl font-black tracking-tighter uppercase">Swift<span className="text-orange-500">Tracks</span></span>
+                <span className="text-2xl font-black tracking-tighter uppercase">Nexus<span className="text-orange-500">Logistics</span></span>
               </div>
               <p className="text-gray-400 max-w-sm leading-relaxed font-medium">
                 The world's most advanced logistics platform. 
@@ -543,7 +543,7 @@ export default function Home() {
             </div>
           </div>
           <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
-            <p className="text-xs font-black uppercase tracking-widest text-gray-500">© 2026 SwiftTracks Logistics. All rights reserved.</p>
+            <p className="text-xs font-black uppercase tracking-widest text-gray-500">© 2026 Nexus Logistics Solutions. Global Operational Standards.</p>
             <div className="flex gap-8">
               {['Twitter', 'LinkedIn', 'Instagram'].map(social => (
                 <a key={social} href="#" className="text-xs font-black uppercase tracking-widest text-gray-500 hover:text-orange-500 transition-colors">
@@ -557,7 +557,7 @@ export default function Home() {
 
       {/* Floating CS Button */}
       <motion.a
-        href="https://t.me/SwiftTracksBeige"
+        href="https://t.me/NexusLogisticsSupport"
         target="_blank"
         rel="noopener noreferrer"
         initial={{ scale: 0, opacity: 0 }}

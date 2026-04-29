@@ -30,11 +30,15 @@ export default function Tracking() {
   const fetchShipment = async () => {
     if (!trackingId) return;
     try {
-      const response = await fetch(`/api/shipments/${trackingId}`);
+      const response = await fetch(`/api/shipments/${trackingId}`, {
+        credentials: 'include'
+      });
       if (response.ok) {
         const data = await response.json();
         setShipment(data);
       } else {
+        const errData = await response.json().catch(() => ({}));
+        console.error('Fetch error:', response.status, errData);
         setShipment(null);
       }
     } catch (error) {
@@ -89,7 +93,7 @@ export default function Tracking() {
     if (!shipment) return;
     const doc = new jsPDF();
     doc.setFontSize(22);
-    doc.text('SwiftTracks Shipping Receipt', 20, 20);
+    doc.text('Nexus Logistics Shipping Receipt', 20, 20);
     doc.setFontSize(12);
     doc.text(`Tracking ID: ${shipment.trackingId}`, 20, 35);
     doc.text(`Status: ${shipment.status}`, 20, 45);
@@ -139,7 +143,7 @@ export default function Tracking() {
           <button onClick={() => navigate('/')} className="p-2 hover:bg-white/10 rounded-xl transition-colors">
             <ArrowLeft className="w-5 h-5 md:w-6 md:h-6" />
           </button>
-          <h1 className="text-lg md:text-xl font-black uppercase tracking-tighter italic">Swift <span className="text-orange-500">Tracks</span></h1>
+          <h1 className="text-lg md:text-xl font-black uppercase tracking-tighter italic">Nexus <span className="text-orange-500">Logistics</span></h1>
         </div>
         <div className="flex items-center gap-2 md:gap-3">
           {shipment && user && shipment.userId === user.uid ? (
@@ -211,33 +215,69 @@ export default function Tracking() {
           </div>
 
           {/* Progress Bar */}
-          <div className="mt-12 md:mt-16 relative px-2 md:px-4">
-            <div className="absolute top-1/2 left-0 w-full h-1 md:h-1.5 bg-gray-100 -translate-y-1/2 rounded-full"></div>
-            <div 
-              className="absolute top-1/2 left-0 h-1 md:h-1.5 bg-orange-500 -translate-y-1/2 transition-all duration-1000 ease-out rounded-full shadow-[0_0_10px_rgba(249,115,22,0.5)]"
-              style={{ width: `${(currentStepIndex / (STATUS_STEPS.length - 1)) * 100}%` }}
-            ></div>
-            
-            <div className="relative flex justify-between items-center">
-              {STATUS_STEPS.map((step, index) => {
-                const isCompleted = index <= currentStepIndex;
-                const isCurrent = index === currentStepIndex;
-                
-                return (
-                  <div key={step} className="flex flex-col items-center">
-                    <div className={`w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-2xl flex items-center justify-center z-10 transition-all duration-500 ${
-                      isCompleted ? 'bg-orange-500 text-white scale-110 shadow-xl rotate-3' : 'bg-white text-gray-300 border-2 border-gray-100'
-                    }`}>
-                      {isCompleted ? <CheckCircle2 className="w-5 h-5 md:w-7 md:h-7" /> : <div className="w-2 h-2 md:w-3 md:h-3 bg-gray-200 rounded-full"></div>}
+          <div className="mt-8 md:mt-16 relative px-2 md:px-4 mb-8 md:mb-0">
+            {/* Desktop Horizontal Bar */}
+            <div className="hidden md:block">
+              <div className="absolute top-1/2 left-0 w-full h-1.5 bg-gray-100 -translate-y-1/2 rounded-full"></div>
+              <div 
+                className="absolute top-1/2 left-0 h-1.5 bg-orange-500 -translate-y-1/2 transition-all duration-1000 ease-out rounded-full shadow-[0_0_10px_rgba(249,115,22,0.5)]"
+                style={{ width: `${(currentStepIndex / (STATUS_STEPS.length - 1)) * 100}%` }}
+              ></div>
+              
+              <div className="relative flex justify-between items-center">
+                {STATUS_STEPS.map((step, index) => {
+                  const isCompleted = index <= currentStepIndex;
+                  const isCurrent = index === currentStepIndex;
+                  
+                  return (
+                    <div key={step} className="flex flex-col items-center">
+                      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center z-10 transition-all duration-500 ${
+                        isCompleted ? 'bg-orange-500 text-white scale-110 shadow-xl rotate-3' : 'bg-white text-gray-300 border-2 border-gray-100'
+                      }`}>
+                        {isCompleted ? <CheckCircle2 className="w-7 h-7" /> : <div className="w-3 h-3 bg-gray-200 rounded-full"></div>}
+                      </div>
+                      <span className={`mt-6 text-[9px] font-black uppercase tracking-widest text-center max-w-[80px] ${
+                        isCurrent ? 'text-orange-500' : isCompleted ? 'text-[#001f3f]' : 'text-gray-300'
+                      }`}>
+                        {step}
+                      </span>
                     </div>
-                    <span className={`mt-4 md:mt-6 text-[7px] md:text-[9px] font-black uppercase tracking-widest text-center max-w-[50px] md:max-w-[80px] ${
-                      isCurrent ? 'text-orange-500' : isCompleted ? 'text-[#001f3f]' : 'text-gray-300'
-                    }`}>
-                      {step}
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Mobile Vertical/Compact Stepper */}
+            <div className="md:hidden">
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center justify-between bg-gray-50 p-4 rounded-2xl border border-gray-100">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center text-white shadow-lg">
+                      <CheckCircle2 className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest block">Current Status</span>
+                      <h4 className="text-sm font-black text-[#001f3f] uppercase tracking-tight italic">{shipment.status}</h4>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-[10px] font-black text-orange-500 uppercase tracking-widest">
+                      Step {currentStepIndex + 1} of {STATUS_STEPS.length}
                     </span>
                   </div>
-                );
-              })}
+                </div>
+                
+                <div className="flex gap-2 px-1">
+                  {STATUS_STEPS.map((_, index) => (
+                    <div 
+                      key={index} 
+                      className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${
+                        index <= currentStepIndex ? 'bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.4)]' : 'bg-gray-100'
+                      }`}
+                    />
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </div>

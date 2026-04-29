@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Shipment, ShipmentStatus } from '../types';
-import { Plus, Search, Truck, Package, MapPin, Clock, ArrowRight, LayoutDashboard, MessageSquare, LogOut, Filter, CheckCircle2, Plane, RefreshCw, Menu, X, Trash2, Users, Edit3, Camera, Send, Loader2, FileText, Zap } from 'lucide-react';
+import { Plus, Search, Truck, Package, MapPin, Clock, ArrowRight, LayoutDashboard, MessageSquare, LogOut, Filter, CheckCircle2, Plane, RefreshCw, Menu, X, Trash2, Users, Edit3, Camera, Send, Loader2, FileText, Zap, Shield } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { format } from 'date-fns';
 import { useAuth } from '../App';
@@ -114,6 +114,7 @@ export default function AdminDashboard() {
             description: `Shipment created and ${newShipment.type === 'Flight' ? 'flight' : 'shipment'} scheduled.`,
           }],
         }),
+        credentials: 'include'
       });
 
       if (response.ok) {
@@ -292,9 +293,9 @@ export default function AdminDashboard() {
       <div className="md:hidden bg-[#001f3f] text-white p-4 flex items-center justify-between sticky top-0 z-[60] shadow-lg">
         <div className="flex items-center gap-2">
           <div className="bg-orange-500 p-1.5 rounded-lg">
-            <Zap className="w-5 h-5 text-white" />
+            <Shield className="w-5 h-5 text-[#001f3f]" />
           </div>
-          <span className="text-lg font-black tracking-tighter uppercase">Swift<span className="text-orange-500">Tracks</span></span>
+          <span className="text-lg font-black tracking-tighter uppercase">Nexus<span className="text-orange-500">Logistics</span></span>
         </div>
         <button 
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -311,9 +312,9 @@ export default function AdminDashboard() {
       `}>
         <div className="p-8 hidden md:flex items-center gap-3 border-b border-white/10">
           <div className="bg-orange-500 p-2 rounded-xl">
-            <Zap className="w-6 h-6 text-white" />
+            <Shield className="w-6 h-6 text-[#001f3f]" />
           </div>
-          <span className="text-xl font-black tracking-tighter uppercase">Swift<span className="text-orange-500">Tracks</span></span>
+          <span className="text-xl font-black tracking-tighter uppercase">Nexus<span className="text-orange-500">Logistics</span></span>
         </div>
         
         <nav className="flex-1 p-6 space-y-2">
