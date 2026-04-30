@@ -49,12 +49,37 @@ let dataCache: any = null;
 async function ensureDataFile() {
   try {
     await fs.access(DATA_FILE);
-    // Load data into cache immediately
     const content = await fs.readFile(DATA_FILE, "utf-8");
     dataCache = JSON.parse(content);
+    
+    // Seed admin if not exists
+    const adminEmail = "pastorjohn046@gmail.com";
+    if (dataCache.users && !dataCache.users.find((u: any) => u.email === adminEmail)) {
+      const hashedPassword = await bcrypt.hash("pastorjohn046@gmail.com", 10);
+      dataCache.users.push({
+        uid: "admin1",
+        email: adminEmail,
+        password: hashedPassword,
+        role: "admin"
+      });
+      await saveData(dataCache);
+      console.log("Admin user seeded.");
+    }
   } catch {
-    dataCache = initialData;
-    await fs.writeFile(DATA_FILE, JSON.stringify(initialData, null, 2));
+    const adminEmail = "pastorjohn046@gmail.com";
+    const hashedPassword = await bcrypt.hash("pastorjohn046@gmail.com", 10);
+    const initialWithAdmin = {
+      ...initialData,
+      users: [{
+        uid: "admin1",
+        email: adminEmail,
+        password: hashedPassword,
+        role: "admin"
+      }]
+    };
+    dataCache = initialWithAdmin;
+    await fs.writeFile(DATA_FILE, JSON.stringify(initialWithAdmin, null, 2));
+    console.log("Initial data and admin user created.");
   }
 }
 
@@ -62,11 +87,21 @@ async function getData() {
   if (dataCache) return dataCache;
   try {
     const content = await fs.readFile(DATA_FILE, "utf-8");
+    if (!content.trim()) {
+      dataCache = { ...initialData };
+      return dataCache;
+    }
     dataCache = JSON.parse(content);
+    // Ensure structure
+    if (!dataCache.logs) dataCache.logs = [];
+    if (!dataCache.users) dataCache.users = [];
+    if (!dataCache.shipments) dataCache.shipments = [];
+    if (!dataCache.tickets) dataCache.tickets = [];
     return dataCache;
   } catch (err) {
     console.error("Error reading data file:", err);
-    return initialData;
+    dataCache = { ...initialData };
+    return dataCache;
   }
 }
 
@@ -213,13 +248,14 @@ async function startServer() {
       const token = jwt.sign({ uid: newUser.uid, email: newUser.email, role: newUser.role }, JWT_SECRET, { expiresIn: "30d" });
       res.cookie("token", token, { 
         httpOnly: true, 
-        secure: true, 
-        sameSite: "none",
+        secure: process.env.NODE_ENV === "production", 
+        sameSite: "lax",
         maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
       });
-      res.json({ uid: newUser.uid, email: newUser.email, role: newUser.role });
+      return res.json({ uid: newUser.uid, email: newUser.email, role: newUser.role });
     } catch (err: any) {
-      res.status(400).json({ error: err.errors?.[0]?.message || "Invalid input" });
+      console.error("Registration error:", err);
+      return res.status(400).json({ error: err.errors?.[0]?.message || "Invalid input or processing error" });
     }
   });
 
@@ -234,14 +270,15 @@ async function startServer() {
       const token = jwt.sign({ uid: user.uid, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: "30d" });
       res.cookie("token", token, { 
         httpOnly: true, 
-        secure: true, 
-        sameSite: "none",
+        secure: process.env.NODE_ENV === "production", 
+        sameSite: "lax",
         maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
       });
       await addLog("User Login", `User logged in: ${email}`, { email });
-      res.json({ uid: user.uid, email: user.email, role: user.role });
+      return res.json({ uid: user.uid, email: user.email, role: user.role });
     } catch (err: any) {
-      res.status(400).json({ error: err.errors?.[0]?.message || "Invalid input" });
+      console.error("Login error:", err);
+      return res.status(400).json({ error: err.errors?.[0]?.message || "Invalid input or processing error" });
     }
   });
 
@@ -337,12 +374,19 @@ async function startServer() {
     const data = await getData();
     const index = data.shipments.findIndex((s: any) => s.id === req.params.id);
     if (index === -1) return res.status(404).json({ error: "Not found" });
+    
+    const oldStatus = data.shipments[index].status;
     data.shipments[index] = {
       ...data.shipments[index],
       ...req.body,
       updatedAt: new Date().toISOString()
     };
     await saveData(data);
+    
+    if (req.body.status && req.body.status !== oldStatus) {
+      await addLog("Shipment Updated", `Updated status to ${req.body.status} for shipment ${data.shipments[index].trackingId}`, req.user);
+    }
+    
     res.json(data.shipments[index]);
   });
   
@@ -351,8 +395,10 @@ async function startServer() {
     const index = data.shipments.findIndex((s: any) => s.id === req.params.id);
     if (index === -1) return res.status(404).json({ error: "Not found" });
     
+    const trackingId = data.shipments[index].trackingId;
     data.shipments.splice(index, 1);
     await saveData(data);
+    await addLog("Shipment Deleted", `Deleted shipment: ${trackingId}`, req.user);
     res.json({ success: true });
   });
 
@@ -385,6 +431,7 @@ async function startServer() {
     };
     data.tickets.push(newTicket);
     await saveData(data);
+    await addLog("Ticket Created", `New ticket created by ${req.user.email}`, req.user);
     res.json(newTicket);
   });
 

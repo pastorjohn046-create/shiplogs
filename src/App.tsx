@@ -66,27 +66,51 @@ export default function App() {
   }, []);
 
   const login = async (email: string, password: string) => {
-    const res = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-      credentials: 'include'
-    });
-    const data = await res.json();
-    if (data.error) throw new Error(data.error);
-    setUser(data);
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+        credentials: 'include'
+      });
+      
+      const contentType = res.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await res.text();
+        throw new Error(`Invalid server response: ${text.substring(0, 100)}`);
+      }
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || `Login failed (${res.status})`);
+      setUser(data);
+    } catch (err: any) {
+      console.error('Login error:', err);
+      throw err;
+    }
   };
 
   const register = async (email: string, password: string) => {
-    const res = await fetch('/api/auth/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-      credentials: 'include'
-    });
-    const data = await res.json();
-    if (data.error) throw new Error(data.error);
-    setUser(data);
+    try {
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+        credentials: 'include'
+      });
+
+      const contentType = res.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await res.text();
+        throw new Error(`Invalid server response: ${text.substring(0, 100)}`);
+      }
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || `Registration failed (${res.status})`);
+      setUser(data);
+    } catch (err: any) {
+      console.error('Registration error:', err);
+      throw err;
+    }
   };
 
   const logout = async () => {

@@ -1,0 +1,13 @@
+{
+  "users": [
+    {
+      "uid": "admin1",
+      "email": "pastorjohn046@gmail.com",
+      "password": "$2a$10$omOoQF8KzDtsV1zHkSsShe74WlOiDp7hcMHAHqEB7ZZM7OU0cKy5W",
+      "role": "admin"
+    }
+  ],
+  "shipments": [],
+  "tickets": [],
+  "logs": []
+}
