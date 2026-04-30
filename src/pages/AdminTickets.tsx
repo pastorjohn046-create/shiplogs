@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Ticket, Message } from '../types';
-import { MessageSquare, ArrowLeft, Send, CheckCircle2, User, LayoutDashboard, LogOut, Truck, Menu, X, Zap, Shield } from 'lucide-react';
+import { MessageSquare, ArrowLeft, Send, CheckCircle2, User, LayoutDashboard, LogOut, Truck, Menu, X, Zap } from 'lucide-react';
 import { format } from 'date-fns';
 import { useAuth } from '../App';
 
@@ -116,27 +116,27 @@ export default function AdminTickets() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row font-sans relative">
+    <div className="min-h-screen bg-white flex flex-col md:flex-row font-sans relative overflow-hidden">
       {/* Mobile Header */}
-      <div className="md:hidden bg-[#001f3f] text-white p-4 flex items-center justify-between sticky top-0 z-[60] shadow-lg">
-        <div className="flex items-center gap-2">
-          <div className="bg-orange-500 p-1.5 rounded-lg">
-            <Shield className="w-5 h-5 text-[#001f3f]" />
+      <div className="md:hidden bg-[#001f3f] text-white p-6 flex items-center justify-between sticky top-0 z-[60] shadow-2xl">
+        <div className="flex items-center gap-4">
+          <div className="bg-orange-600 p-2 rounded-xl">
+            <Zap className="w-5 h-5 text-[#001f3f]" />
           </div>
-          <span className="text-lg font-black tracking-tighter uppercase">Nexus<span className="text-orange-500">Logistics</span></span>
+          <span className="text-xl font-black tracking-tighter uppercase italic">SwiftShip<span className="text-orange-600">Console.</span></span>
         </div>
         <div className="flex items-center gap-2">
           {selectedTicket && (
             <button 
               onClick={() => setSelectedTicket(null)}
-              className="p-2 hover:bg-white/10 rounded-xl transition-colors"
+              className="p-3 hover:bg-white/10 rounded-xl transition-colors"
             >
               <ArrowLeft className="w-6 h-6" />
             </button>
           )}
           <button 
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            className="p-2 hover:bg-white/10 rounded-xl transition-colors"
+            className="p-3 hover:bg-white/10 rounded-xl transition-colors"
           >
             {isSidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -145,49 +145,49 @@ export default function AdminTickets() {
 
       {/* Sidebar */}
       <aside className={`
-        fixed inset-y-0 left-0 z-50 w-72 bg-[#001f3f] text-white flex flex-col shadow-2xl transition-transform duration-300 ease-in-out md:relative md:translate-x-0
+        fixed inset-y-0 left-0 z-50 w-80 bg-[#001f3f] text-white flex flex-col shadow-[20px_0_100px_rgba(0,0,0,0.5)] transition-transform duration-500 md:relative md:translate-x-0
         ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
-        <div className="p-8 hidden md:flex items-center gap-3 border-b border-white/10">
-          <div className="bg-orange-500 p-2 rounded-xl">
-            <Shield className="w-6 h-6 text-[#001f3f]" />
+        <div className="p-10 hidden md:flex items-center gap-4 border-b border-white/5">
+          <div className="bg-orange-600 p-3 rounded-2xl shadow-2xl rotate-3">
+            <Zap className="w-6 h-6 text-[#001f3f]" />
           </div>
-          <span className="text-xl font-black tracking-tighter uppercase">Nexus<span className="text-orange-500">Logistics</span></span>
+          <span className="text-2xl font-black tracking-tighter uppercase italic">SwiftShip<span className="text-orange-600">HQ.</span></span>
         </div>
         
-        <nav className="flex-1 p-6 space-y-2">
+        <nav className="flex-1 p-8 space-y-4 overflow-y-auto">
           <button 
             onClick={() => { navigate('/admin'); setIsSidebarOpen(false); }}
-            className="w-full flex items-center gap-4 px-4 py-4 rounded-2xl text-gray-400 hover:bg-white/5 hover:text-white font-bold transition-all"
+            className="w-full flex items-center gap-5 px-6 py-5 rounded-[2rem] text-slate-400 hover:bg-white/5 hover:text-white font-black uppercase tracking-widest text-[10px] transition-all"
           >
             <LayoutDashboard className="w-5 h-5" />
-            Shipments
+            Operations Grid
           </button>
           <button 
             onClick={() => { navigate('/admin/tickets'); setIsSidebarOpen(false); }}
-            className="w-full flex items-center gap-4 px-4 py-4 rounded-2xl bg-orange-500 text-white shadow-lg font-bold transition-all"
+            className="w-full flex items-center gap-5 px-6 py-5 rounded-[2rem] bg-orange-600 text-[#001f3f] shadow-2xl shadow-orange-600/20 font-black uppercase tracking-widest text-[10px] transition-all italic"
           >
             <MessageSquare className="w-5 h-5" />
-            Support Tickets
+            Tactical Comms
           </button>
-          <div className="pt-4 mt-4 border-t border-white/5">
+          <div className="pt-8 mt-8 border-t border-white/5">
             <button 
               onClick={() => { navigate('/dashboard'); setIsSidebarOpen(false); }}
-              className="w-full flex items-center gap-4 px-4 py-4 rounded-2xl text-gray-400 hover:bg-white/5 hover:text-white font-bold transition-all"
+              className="w-full flex items-center gap-5 px-6 py-5 rounded-[2rem] text-slate-400 hover:bg-white/5 hover:text-white font-black uppercase tracking-widest text-[10px] transition-all"
             >
-              <ArrowLeft className="w-5 h-5" />
-              User Dashboard
+              <ArrowLeft className="w-5 h-5 text-orange-600" />
+              Public Console
             </button>
           </div>
         </nav>
 
-        <div className="p-6 border-t border-white/10">
+        <div className="p-8 border-t border-white/5">
           <button 
             onClick={handleLogout}
-            className="w-full flex items-center gap-4 px-4 py-4 rounded-2xl text-red-400 hover:bg-red-500/10 font-bold transition-all"
+            className="w-full flex items-center gap-5 px-6 py-5 rounded-[2rem] text-red-500 hover:bg-red-500/10 font-black uppercase tracking-widest text-[10px] transition-all"
           >
             <LogOut className="w-5 h-5" />
-            Logout
+            Terminate
           </button>
         </div>
       </aside>
@@ -195,22 +195,23 @@ export default function AdminTickets() {
       {/* Sidebar Overlay for Mobile */}
       {isSidebarOpen && (
         <div 
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 md:hidden"
+          className="fixed inset-0 bg-black/60 backdrop-blur-md z-40 md:hidden"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col h-[calc(100vh-64px)] md:h-screen overflow-hidden">
-        <header className="p-6 md:p-12 bg-white border-b border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center shadow-sm gap-4">
+      <main className="flex-1 flex flex-col h-[calc(100vh-80px)] md:h-screen overflow-hidden bg-slate-50/50">
+        <header className="p-8 md:p-14 bg-white border-b border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-8 relative z-20">
           <div>
-            <h1 className="text-2xl md:text-4xl font-black text-[#001f3f] tracking-tighter mb-1 md:mb-2 uppercase italic">Nexus <span className="text-orange-500">Support</span></h1>
-            <p className="text-gray-400 font-bold uppercase tracking-widest text-[8px] md:text-[10px]">Manage customer inquiries and elite support tickets</p>
+            <div className="text-orange-600 font-black uppercase tracking-[0.6em] text-[10px] mb-4">Command Center Support</div>
+            <h1 className="text-4xl md:text-5xl font-black text-[#001f3f] tracking-tighter uppercase italic leading-none mb-3">Tactical <span className="text-slate-300">Uplink.</span></h1>
+            <p className="text-slate-400 font-black uppercase tracking-[0.3em] text-[8px] md:text-[9px]">Node 01: Secure Communication Manifest</p>
           </div>
-          <div className="hidden md:flex gap-6">
-            <div className="bg-orange-50 px-8 py-4 rounded-[2rem] border border-orange-100 shadow-sm">
-              <span className="text-[10px] font-black text-orange-700 uppercase tracking-widest block mb-1">Active Inquiries</span>
-              <span className="text-3xl font-black text-orange-700 italic">{tickets.filter(t => t.status === 'open').length}</span>
+          <div className="hidden xl:flex gap-10">
+            <div className="nexus-card px-10 py-6 rounded-[2.5rem] border-slate-200">
+              <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest block mb-1 italic">Active Inquiries</span>
+              <span className="text-4xl font-black text-[#001f3f] italic leading-none">{tickets.filter(t => t.status === 'open').length}</span>
             </div>
           </div>
         </header>
@@ -218,104 +219,112 @@ export default function AdminTickets() {
         <div className="flex-1 flex overflow-hidden relative">
           {/* Ticket List */}
           <div className={`
-            w-full md:w-[400px] border-r border-gray-100 bg-white overflow-y-auto shadow-sm pb-24 md:pb-0
+            w-full md:w-[450px] border-r border-slate-100 bg-white overflow-y-auto shadow-sm pb-24 md:pb-0
             ${selectedTicket ? 'hidden md:block' : 'block'}
           `}>
-            <div className="p-6 md:p-8 border-b border-gray-50 bg-gray-50/50">
-              <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Incoming Tickets</h2>
+            <div className="p-8 border-b border-slate-50 bg-slate-50/30 sticky top-0 z-10 backdrop-blur-md">
+              <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 italic">Incoming Packets</h2>
             </div>
             {loading ? (
-              <div className="p-12 md:p-20 text-center">
-                <div className="animate-spin rounded-full h-8 w-8 md:h-10 md:w-10 border-4 border-orange-500 border-t-transparent mx-auto"></div>
+              <div className="p-32 text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-4 border-orange-600 border-t-transparent mx-auto"></div>
               </div>
             ) : tickets.length > 0 ? (
-              <div className="divide-y divide-gray-50">
-                {tickets.map((ticket) => (
+              <div className="divide-y divide-slate-50">
+                {tickets.map((ticket, i) => (
                   <button 
                     key={ticket.id}
                     onClick={() => setSelectedTicket(ticket)}
-                    className={`w-full p-6 md:p-8 text-left hover:bg-gray-50 transition-all flex flex-col gap-3 md:gap-4 group ${
-                      selectedTicket?.id === ticket.id ? 'bg-orange-50/50 border-r-4 border-orange-500' : ''
+                    className={`w-full p-10 text-left hover:bg-slate-50/50 transition-all flex flex-col gap-6 group relative overflow-hidden ${
+                      selectedTicket?.id === ticket.id ? 'bg-slate-50 border-r-8 border-orange-600' : ''
                     }`}
                   >
                     <div className="flex justify-between items-start">
-                      <span className={`px-2 md:px-3 py-1 rounded-full text-[7px] md:text-[8px] font-black uppercase tracking-widest border ${
-                        ticket.status === 'open' ? 'bg-green-50 text-green-700 border-green-100' : 'bg-gray-100 text-gray-400 border-gray-200'
+                      <div className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest border ${
+                        ticket.status === 'open' ? 'bg-orange-50 text-orange-600 border-orange-100' : 'bg-slate-100 text-slate-400 border-slate-200'
                       }`}>
+                        <div className={`w-1.5 h-1.5 rounded-full ${ticket.status === 'open' ? 'bg-orange-500 animate-pulse' : 'bg-slate-300'}`} />
                         {ticket.status}
-                      </span>
-                      <span className="text-[8px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                        {format(new Date(ticket.createdAt), 'MMM d')}
+                      </div>
+                      <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest italic group-hover:text-orange-600 transition-colors">
+                        {format(new Date(ticket.createdAt), 'MMM dd')}
                       </span>
                     </div>
-                    <p className="font-black text-[#001f3f] truncate w-full uppercase tracking-tight italic group-hover:text-orange-500 transition-colors text-sm md:text-base">
-                      {ticket.messages[0]?.text}
-                    </p>
-                    <div className="flex items-center gap-2 md:gap-3 text-[8px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                      <User className="w-3 h-3 md:w-4 md:h-4 text-orange-500" />
-                      <span className="truncate">{ticket.customerEmail || ticket.customerId}</span>
+                    <div className="space-y-3">
+                      <p className="font-black text-xl text-[#001f3f] truncate w-full uppercase tracking-tighter italic group-hover:translate-x-2 transition-transform">
+                        {ticket.messages[0]?.text}
+                      </p>
+                      <div className="flex items-center gap-4 text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                        <User className="w-4 h-4 text-orange-600" />
+                        <span className="truncate">{ticket.customerEmail || ticket.customerId}</span>
+                      </div>
                     </div>
                   </button>
                 ))}
               </div>
             ) : (
-              <div className="p-12 md:p-20 text-center">
-                <div className="bg-gray-50 w-12 h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6">
-                  <MessageSquare className="w-6 h-6 md:w-8 md:h-8 text-gray-200" />
+              <div className="p-32 text-center">
+                <div className="bg-slate-50 w-24 h-24 rounded-[2rem] flex items-center justify-center mx-auto mb-8 shadow-xl">
+                  <MessageSquare className="w-10 h-10 text-slate-100" />
                 </div>
-                <p className="text-gray-400 font-black uppercase tracking-widest text-[8px] md:text-[10px]">No tickets found</p>
+                <p className="text-slate-200 font-black uppercase tracking-[0.5em] text-[10px]">No Signals Detected</p>
               </div>
             )}
           </div>
 
           {/* Chat Area */}
           <div className={`
-            flex-1 flex flex-col bg-gray-50 pb-24 md:pb-0
+            flex-1 flex flex-col bg-slate-50/30 pb-24 md:pb-0 relative
             ${selectedTicket ? 'block' : 'hidden md:flex'}
           `}>
+             <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(249,115,22,0.02),transparent_70%)] pointer-events-none" />
+
             {selectedTicket ? (
               <>
-                <div className="p-4 md:p-8 bg-white border-b border-gray-100 flex justify-between items-center shadow-sm shrink-0">
-                  <div className="flex items-center gap-4 md:gap-6">
-                    <div className="bg-orange-500 p-3 md:p-4 rounded-xl md:rounded-2xl shadow-xl rotate-3">
-                      <User className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                <div className="p-8 md:p-12 bg-white/70 backdrop-blur-xl border-b border-slate-100 flex justify-between items-center shadow-sm shrink-0 sticky top-0 z-10">
+                  <div className="flex items-center gap-8">
+                    <div className="bg-[#001f3f] p-5 rounded-3xl shadow-2xl rotate-3 border-4 border-white">
+                      <User className="w-6 h-6 text-orange-600" />
                     </div>
                     <div>
-                      <div className="flex items-center gap-2 md:gap-3">
-                        <h3 className="font-black text-[#001f3f] uppercase tracking-tight italic text-base md:text-xl">Ticket #{selectedTicket.id?.slice(-6) || '......'}</h3>
-                        <div className="flex items-center gap-1 bg-green-50 px-2 md:px-3 py-0.5 md:py-1 rounded-full border border-green-100">
-                          <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-green-500 rounded-full animate-pulse"></div>
-                          <span className="text-[7px] md:text-[8px] font-black text-green-700 uppercase tracking-widest">Live</span>
+                      <div className="flex items-center gap-4">
+                        <h3 className="font-black text-[#001f3f] uppercase tracking-tighter italic text-2xl">Session_{selectedTicket.id?.slice(-6).toUpperCase()}</h3>
+                        <div className="flex items-center gap-2 bg-slate-900 px-4 py-1.5 rounded-full text-[9px] font-black text-orange-500 uppercase tracking-widest shadow-2xl border border-white/5">
+                          <div className="w-2 h-2 bg-orange-600 rounded-full animate-pulse shadow-[0_0_10px_rgba(249,115,22,0.8)]"></div>
+                          In_Uplink
                         </div>
                       </div>
-                      <p className="text-[8px] md:text-[10px] font-black text-gray-400 tracking-widest uppercase mt-0.5 md:mt-1 truncate max-w-[150px] md:max-w-none">Customer: {selectedTicket.customerEmail || selectedTicket.customerId}</p>
+                      <p className="text-[9px] font-black text-slate-300 tracking-[0.3em] uppercase mt-2 italic truncate max-w-[200px] xl:max-w-none">Target: {selectedTicket.customerEmail || selectedTicket.customerId}</p>
                     </div>
                   </div>
                   <button 
                     onClick={() => handleCloseTicket(selectedTicket.id)}
-                    className="flex items-center gap-2 px-4 md:px-8 py-3 md:py-4 rounded-xl bg-gray-50 text-gray-400 hover:bg-red-50 hover:text-red-500 font-black uppercase tracking-widest text-[8px] md:text-[10px] transition-all border border-gray-100 shadow-sm"
+                    className="flex items-center gap-3 px-8 py-4 rounded-3xl bg-slate-50 text-slate-300 hover:bg-red-600 hover:text-white font-black uppercase tracking-widest text-[10px] transition-all border border-slate-100 shadow-sm group"
                   >
-                    <CheckCircle2 className="w-4 h-4 md:w-5 md:h-5" />
-                    <span className="hidden sm:inline">Close Ticket</span>
+                    <CheckCircle2 className="w-5 h-5 group-hover:rotate-12 transition-transform" />
+                    Terminate Connection
                   </button>
                 </div>
 
-                <div className="flex-1 overflow-y-auto p-6 md:p-10 space-y-6 md:space-y-8">
+                <div className="flex-1 overflow-y-auto p-10 md:p-16 space-y-12 relative z-0">
                   {selectedTicket.messages.map((msg, i) => {
                     const isAdmin = msg.sender === 'Admin';
                     return (
                       <div key={i} className={`flex ${isAdmin ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`max-w-[85%] md:max-w-[70%] p-5 md:p-8 rounded-2xl md:rounded-[2rem] shadow-lg md:shadow-xl relative ${
+                        <div className={`max-w-[85%] xl:max-w-[60%] p-10 rounded-[3rem] relative ${
                           isAdmin 
-                            ? 'bg-[#001f3f] text-white rounded-tr-none' 
-                            : 'bg-white text-[#001f3f] rounded-tl-none border border-gray-100'
+                            ? 'bg-[#001f3f] text-white rounded-tr-none shadow-[0_30px_60px_-15px_rgba(0,31,63,0.3)]' 
+                            : 'bg-white text-[#001f3f] rounded-tl-none border border-slate-100 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.05)]'
                         }`}>
-                          <p className="font-bold leading-relaxed text-sm md:text-lg italic">{msg.text}</p>
-                          <span className={`text-[8px] md:text-[10px] font-black mt-3 md:mt-4 block uppercase tracking-widest ${
-                            isAdmin ? 'text-gray-400' : 'text-gray-300'
-                          }`}>
-                            {format(new Date(msg.timestamp), 'h:mm a')}
-                          </span>
+                          <p className="font-black leading-relaxed text-lg xl:text-xl italic uppercase tracking-tight">{msg.text}</p>
+                          <div className={`mt-6 pt-6 border-t flex justify-between items-center ${isAdmin ? 'border-white/5' : 'border-slate-50'}`}>
+                            <span className="text-[10px] font-black uppercase tracking-[0.4em] opacity-40">{isAdmin ? 'OPERATOR' : 'CLIENT'}</span>
+                            <span className="text-[10px] font-black uppercase tracking-widest opacity-40 flex items-center gap-2">
+                              {format(new Date(msg.timestamp), 'HH:mm | MMM dd')}
+                            </span>
+                          </div>
+                          {/* Tactical accent */}
+                          <div className={`absolute top-0 ${isAdmin ? 'right-0' : 'left-0'} w-12 h-1 bg-orange-600 rounded-full blur-[2px] opacity-50`} />
                         </div>
                       </div>
                     );
@@ -323,32 +332,38 @@ export default function AdminTickets() {
                   <div ref={messagesEndRef} />
                 </div>
 
-                <div className="p-6 md:p-10 bg-white border-t border-gray-100 shadow-2xl shrink-0">
-                  <form onSubmit={handleSendReply} className="flex gap-3 md:gap-6">
+                <div className="p-10 md:p-14 bg-white/70 backdrop-blur-xl border-t border-slate-100 shadow-2xl shrink-0 z-10">
+                  <form onSubmit={handleSendReply} className="flex gap-6 max-w-5xl mx-auto">
                     <input 
                       type="text" 
                       value={reply}
                       onChange={(e) => setReply(e.target.value)}
-                      placeholder="Type response..."
-                      className="flex-1 px-6 md:px-10 py-4 md:py-6 bg-gray-50 rounded-xl md:rounded-2xl outline-none focus:ring-4 ring-orange-500/10 font-bold text-[#001f3f] border border-transparent focus:border-orange-500/20 transition-all text-sm md:text-base"
+                      placeholder="ENTER COMMAND RESPONSE..."
+                      className="flex-1 px-10 py-6 bg-slate-50 rounded-[2.5rem] outline-none focus:ring-4 ring-orange-600/10 font-black text-[#001f3f] border border-transparent focus:border-orange-600/20 transition-all text-sm uppercase tracking-widest placeholder:text-slate-200"
                     />
                     <button 
                       type="submit"
-                      className="bg-orange-500 text-white px-6 md:px-12 py-4 md:py-6 rounded-xl md:rounded-2xl font-black uppercase tracking-widest text-[10px] md:text-xs hover:bg-[#001f3f] transition-all shadow-xl flex items-center gap-2 md:gap-3 active:scale-95"
+                      className="bg-[#001f3f] text-white px-12 py-6 rounded-[2.5rem] font-black uppercase tracking-widest text-[10px] hover:bg-orange-600 transition-all shadow-2xl shadow-indigo-900/20 flex items-center gap-4 group active:scale-95"
                     >
-                      <Send className="w-5 h-5 md:w-6 md:h-6" />
-                      <span className="hidden sm:inline">Send</span>
+                      <Send className="w-6 h-6 text-orange-600 group-hover:translate-x-2 group-hover:-translate-y-2 transition-transform" />
+                      <span className="hidden sm:inline">Dispatch Signal</span>
                     </button>
                   </form>
                 </div>
               </>
             ) : (
-              <div className="flex-1 flex flex-col items-center justify-center text-center p-10">
-                <div className="bg-white p-8 md:p-12 rounded-[2rem] md:rounded-[3rem] shadow-2xl mb-6 md:mb-10 rotate-3">
-                  <MessageSquare className="w-12 h-12 md:w-20 md:h-20 text-orange-500" />
+              <div className="flex-1 flex flex-col items-center justify-center text-center p-20 relative overflow-hidden">
+                <div className="bg-white p-16 rounded-[4rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.1)] mb-12 rotate-6 relative z-10 group hover:rotate-0 transition-transform duration-700">
+                  <MessageSquare className="w-24 h-24 text-orange-600 group-hover:scale-110 transition-transform" />
+                  <div className="absolute -top-4 -right-4 w-12 h-12 bg-[#001f3f] rounded-2xl flex items-center justify-center">
+                    <Zap className="w-6 h-6 text-orange-600 animate-pulse font-black" />
+                  </div>
                 </div>
-                <h2 className="text-2xl md:text-4xl font-black text-[#001f3f] uppercase tracking-tighter italic mb-2 md:mb-4">Select a <span className="text-orange-500">Ticket</span></h2>
-                <p className="text-gray-400 max-w-sm font-bold uppercase tracking-widest text-[8px] md:text-[10px]">Choose a ticket from the sidebar to start responding to customer inquiries</p>
+                <h2 className="text-5xl font-black text-[#001f3f] uppercase tracking-tighter italic mb-6 leading-none z-10">Awaiting <br /> <span className="text-orange-600 text-6xl">Packet Choice.</span></h2>
+                <p className="text-slate-400 max-w-md font-black uppercase tracking-[0.4em] text-[10px] leading-relaxed z-10 italic">Select an active support vector from the operations manifest to establish secure uplink.</p>
+                
+                {/* Background Decoration */}
+                <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-orange-600/5 rounded-full blur-[100px] -mr-64 -mb-64" />
               </div>
             )}
           </div>

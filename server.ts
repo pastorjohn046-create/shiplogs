@@ -29,25 +29,42 @@ let dataCache: any = null;
 async function ensureDataFile() {
   try {
     await fs.access(DATA_FILE);
+    // Load data into cache immediately
+    const content = await fs.readFile(DATA_FILE, "utf-8");
+    dataCache = JSON.parse(content);
   } catch {
+    dataCache = initialData;
     await fs.writeFile(DATA_FILE, JSON.stringify(initialData, null, 2));
   }
 }
 
 async function getData() {
+  if (dataCache) return dataCache;
   try {
     const content = await fs.readFile(DATA_FILE, "utf-8");
     dataCache = JSON.parse(content);
     return dataCache;
   } catch (err) {
     console.error("Error reading data file:", err);
-    return dataCache || initialData;
+    return initialData;
   }
 }
 
 async function saveData(data: any) {
-  dataCache = data;
-  await fs.writeFile(DATA_FILE, JSON.stringify(data, null, 2));
+  const tempFile = `${DATA_FILE}.tmp`;
+  try {
+    dataCache = data;
+    // Atomic-like write: write to temp then rename
+    const content = JSON.stringify(data, null, 2);
+    await fs.writeFile(tempFile, content, "utf-8");
+    await fs.rename(tempFile, DATA_FILE);
+  } catch (err) {
+    console.error("Error saving data file:", err);
+    // Cleanup temp file if it exists
+    try {
+      await fs.unlink(tempFile);
+    } catch {}
+  }
 }
 
 // Validation Schemas

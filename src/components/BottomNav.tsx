@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Home, Package, User, Globe, History, Shield } from 'lucide-react';
+import { Home, Package, User, Globe, History, Zap } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useAuth } from '../App';
 
@@ -12,7 +12,7 @@ export default function BottomNav() {
     { icon: Home, label: 'Home', path: '/' },
     { icon: Globe, label: 'News', path: '/news' },
     { icon: user ? History : Package, label: user ? 'Updates' : 'Track', path: user ? '/updates' : '/' },
-    { icon: user ? (isAdmin ? Shield : User) : User, label: user ? (isAdmin ? 'Admin' : 'Profile') : 'Login', path: user ? (isAdmin ? '/admin' : '/profile') : '/login' },
+    { icon: user ? (isAdmin ? Zap : User) : User, label: user ? (isAdmin ? 'Admin' : 'Profile') : 'Login', path: user ? (isAdmin ? '/admin' : '/profile') : '/login' },
   ];
 
   return (
@@ -21,7 +21,7 @@ export default function BottomNav() {
         const isActive = location.pathname === item.path || (item.path === '/track/search' && location.pathname.startsWith('/track/'));
         return (
           <button
-            key={item.path}
+            key={item.label}
             onClick={() => navigate(item.path === '/track/search' ? '/' : item.path)}
             className="flex flex-col items-center gap-1 relative group"
           >

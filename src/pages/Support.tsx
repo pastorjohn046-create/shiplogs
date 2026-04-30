@@ -116,12 +116,23 @@ export default function Support() {
           </div>
           <h1 className="text-2xl md:text-3xl font-black text-[#001f3f] mb-4 uppercase tracking-tight italic">Sign In Required</h1>
           <p className="text-gray-400 mb-10 font-bold uppercase tracking-widest text-[10px]">Access our elite support center</p>
-          <button 
-            onClick={() => navigate('/login')}
-            className="w-full bg-[#001f3f] text-white py-5 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-orange-500 transition-all shadow-xl active:scale-95"
-          >
-            Sign In Now
-          </button>
+          <div className="space-y-4">
+            <button 
+              onClick={() => navigate('/login')}
+              className="w-full bg-[#001f3f] text-white py-5 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-orange-500 transition-all shadow-xl active:scale-95"
+            >
+              Sign In Now
+            </button>
+            <a 
+              href="https://t.me/PeakLogisticsPartners" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-3 w-full bg-[#0088cc] text-white py-5 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-[#0077b5] transition-all shadow-xl active:scale-95"
+            >
+              <Send className="w-5 h-5" />
+              Telegram Support
+            </a>
+          </div>
         </div>
       </div>
     );
@@ -157,7 +168,7 @@ export default function Support() {
           <button onClick={() => navigate('/')} className="p-3 hover:bg-white/10 rounded-xl transition-colors">
             <ArrowLeft className="w-6 h-6" />
           </button>
-          <h1 className="text-xl font-black uppercase tracking-tighter italic">Nexus <span className="text-orange-500">Support</span></h1>
+          <h1 className="text-xl font-black uppercase tracking-tighter italic">SwiftShip <span className="text-orange-500">Support</span></h1>
         </div>
         <button 
           onClick={() => setIsNewTicketModalOpen(true)}
@@ -183,7 +194,7 @@ export default function Support() {
               <div className="animate-spin rounded-full h-10 w-10 border-4 border-orange-500 border-t-transparent mx-auto"></div>
             </div>
           ) : tickets.length > 0 ? (
-            <div className="divide-y divide-gray-50 overflow-y-auto h-[calc(100%-80px)]">
+            <div className="divide-y divide-gray-50 overflow-y-auto h-[calc(100%-150px)] pb-20">
               {tickets.map((ticket) => (
                 <button 
                   key={ticket.id}
@@ -213,12 +224,24 @@ export default function Support() {
             </div>
           ) : (
             <div className="p-20 text-center">
-              <div className="bg-gray-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
-                <MessageSquare className="w-8 h-8 text-gray-200" />
+              <div className="bg-gray-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 text-gray-200">
+                <MessageSquare className="w-8 h-8" />
               </div>
               <p className="text-gray-400 font-black uppercase tracking-widest text-[10px]">No tickets active</p>
             </div>
           )}
+
+          <div className="absolute bottom-0 left-0 w-full p-4 bg-white border-t border-gray-50">
+            <a 
+              href="https://t.me/PeakLogisticsPartners" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 w-full bg-[#0088cc] text-white py-4 rounded-xl font-black uppercase tracking-widest text-[9px] hover:bg-[#0077b5] transition-all shadow-lg active:scale-95"
+            >
+              <Send className="w-4 h-4" />
+              Telegram Support Grid
+            </a>
+          </div>
         </div>
 
         {/* Overlay for mobile sidebar */}
@@ -300,12 +323,23 @@ export default function Support() {
               </div>
               <h2 className="text-3xl md:text-4xl font-black text-[#001f3f] uppercase tracking-tighter italic mb-4">Support <span className="text-orange-500">Center</span></h2>
               <p className="text-gray-400 max-w-sm font-bold uppercase tracking-widest text-[10px] mb-10">Select an existing ticket or create a new one for immediate assistance</p>
-              <button 
-                onClick={() => setIsNewTicketModalOpen(true)}
-                className="bg-[#001f3f] text-white px-12 py-6 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-orange-500 transition-all shadow-xl active:scale-95"
-              >
-                Create New Ticket
-              </button>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <button 
+                  onClick={() => setIsNewTicketModalOpen(true)}
+                  className="bg-[#001f3f] text-white px-10 py-5 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-orange-500 transition-all shadow-xl active:scale-95"
+                >
+                  Create New Ticket
+                </button>
+                <a 
+                  href="https://t.me/PeakLogisticsPartners" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-3 bg-[#0088cc] text-white px-10 py-5 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-[#0077b5] transition-all shadow-xl active:scale-95"
+                >
+                  <Send className="w-4 h-4" />
+                  Live Telegram Support
+                </a>
+              </div>
             </div>
           )}
         </div>

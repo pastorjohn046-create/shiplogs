@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Globe, ArrowLeft, ExternalLink, Calendar, Search, Newspaper, Zap, TrendingUp, Shield } from 'lucide-react';
+import { Globe, ArrowLeft, ExternalLink, Calendar, Search, Newspaper, Zap, TrendingUp } from 'lucide-react';
 import { motion } from 'motion/react';
 
 const NEWS_ARTICLES = [
@@ -56,7 +56,7 @@ export default function News() {
           <button onClick={() => navigate(-1)} className="p-3 hover:bg-white/10 rounded-xl transition-colors">
             <ArrowLeft className="w-6 h-6" />
           </button>
-          <h1 className="text-xl font-black uppercase tracking-tighter italic">Nexus <span className="text-orange-500">Dispatch</span></h1>
+          <h1 className="text-xl font-black uppercase tracking-tighter italic">SwiftShip <span className="text-orange-500">Dispatch</span></h1>
         </div>
         <div className="bg-orange-500 p-2 rounded-xl shadow-lg rotate-12">
           <Globe className="w-5 h-5 text-white animate-spin-slow" />
@@ -67,7 +67,7 @@ export default function News() {
         <header className="mb-16">
           <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-orange-500 mb-4">Elite Intelligence Feed</h2>
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
-            <h3 className="text-6xl md:text-8xl font-black text-[#001f3f] leading-[0.85] uppercase tracking-tighter italic">
+            <h3 className="text-6xl md:text-7xl font-black text-[#001f3f] leading-[0.85] uppercase tracking-tighter italic">
               Global <br />
               <span className="text-gray-300">Perspectives</span>
             </h3>
@@ -162,7 +162,7 @@ export default function News() {
         <section className="mt-24 bg-[#001f3f] rounded-[4rem] p-12 md:p-24 text-center relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.1),transparent_70%)]" />
           <div className="bg-orange-500 w-24 h-24 rounded-[2rem] flex items-center justify-center mx-auto mb-10 rotate-12 shadow-2xl relative z-10">
-            <Shield className="w-12 h-12 text-[#001f3f]" />
+            <Zap className="w-12 h-12 text-[#001f3f]" />
           </div>
           <h2 className="text-4xl md:text-6xl font-black text-white leading-[0.85] uppercase tracking-tighter italic mb-10 relative z-10">
             Real-Time <br />

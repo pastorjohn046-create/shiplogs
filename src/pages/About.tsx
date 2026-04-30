@@ -1,13 +1,13 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Truck, Users, ShieldCheck, Globe, ArrowLeft, Zap, BarChart3, Package, Shield } from 'lucide-react';
+import { Truck, Users, Globe, ArrowLeft, Zap, BarChart3, Package } from 'lucide-react';
 import { motion } from 'motion/react';
 
 const values = [
   {
     title: 'Integrity',
     description: 'We build trust through transparency and unwavering commitment to our promises.',
-    icon: ShieldCheck,
+    icon: Zap,
   },
   {
     title: 'Innovation',
@@ -31,10 +31,10 @@ export default function About() {
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/')}>
             <div className="bg-[#001f3f] p-2 rounded-xl">
-              <Shield className="w-6 h-6 text-white" />
+              <Zap className="w-6 h-6 text-white" />
             </div>
-            <span className="text-xl font-black tracking-tighter uppercase text-[#001f3f]">
-              Nexus<span className="text-orange-500">Logistics</span>
+            <span className="text-lg md:text-xl font-black tracking-tighter uppercase text-[#001f3f]">
+              SwiftShip<span className="text-orange-500 hidden sm:inline">Logistics</span><span className="text-orange-500 sm:hidden">Lg.</span>
             </span>
           </div>
           <button 
@@ -56,7 +56,7 @@ export default function About() {
               <span className="text-gray-300">Future Forward</span>
             </h1>
             <p className="text-base md:text-xl text-gray-500 max-w-2xl font-medium leading-relaxed">
-              Nexus Logistics was founded with a simple mission: to make global logistics as seamless as local delivery. 
+              SwiftShip Logistics was founded with a simple mission: to make global logistics as seamless as local delivery. 
               Today, we are the backbone of modern commerce, moving millions of packages across the globe.
             </p>
           </header>
@@ -134,7 +134,7 @@ export default function About() {
             </h2>
             <p className="text-gray-400 max-w-xl mx-auto mb-8 md:mb-12 font-medium relative z-10 text-sm md:text-base">
               We are always looking for passionate individuals to help us redefine the future of logistics. 
-              Explore our open positions and start your journey with Nexus Logistics.
+              Explore our open positions and start your journey with SwiftShip Logistics.
             </p>
             <button className="bg-white text-[#001f3f] px-10 md:px-12 py-5 md:py-6 rounded-2xl font-black uppercase tracking-widest text-[10px] md:text-xs hover:bg-orange-500 hover:text-white transition-all shadow-xl relative z-10">
               View Careers
@@ -147,11 +147,11 @@ export default function About() {
         <div className="max-w-7xl mx-auto text-center">
           <div className="flex items-center justify-center gap-2 mb-8">
             <div className="bg-orange-500 p-2 rounded-xl">
-              <Shield className="w-6 h-6 text-[#001f3f]" />
+              <Zap className="w-6 h-6 text-[#001f3f]" />
             </div>
-            <span className="text-2xl font-black tracking-tighter uppercase">Nexus<span className="text-orange-500">Logistics</span></span>
+            <span className="text-2xl font-black tracking-tighter uppercase">SwiftShip<span className="text-orange-500">Logistics</span></span>
           </div>
-          <p className="text-gray-500 text-xs font-black uppercase tracking-widest">© 2026 Nexus Logistics. All rights reserved.</p>
+          <p className="text-gray-500 text-xs font-black uppercase tracking-widest">© 2026 SwiftShip Logistics. All rights reserved.</p>
         </div>
       </footer>
     </div>

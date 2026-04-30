@@ -195,126 +195,133 @@ export default function AdminShipment() {
   if (!shipment) return null;
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20 font-sans">
-      <nav className="bg-[#001f3f] text-white px-8 py-6 flex items-center justify-between sticky top-0 z-50 shadow-2xl">
-        <div className="flex items-center gap-4">
-          <button onClick={() => navigate('/admin')} className="p-3 hover:bg-white/10 rounded-xl transition-colors">
-            <ArrowLeft className="w-6 h-6" />
+    <div className="min-h-screen bg-white pt-16 md:pt-32 pb-40 font-sans">
+      <nav className="nexus-glass px-6 py-6 flex items-center justify-between sticky top-0 z-50 border-b border-slate-100 mb-12">
+        <div className="flex items-center gap-6">
+          <button onClick={() => navigate('/admin')} className="p-3 hover:bg-slate-100 rounded-2xl transition-colors group">
+            <ArrowLeft className="w-6 h-6 text-[#001f3f] group-hover:-translate-x-1 transition-transform" />
           </button>
           <div>
-            <h1 className="text-xl font-black uppercase tracking-tighter italic">Nexus <span className="text-orange-500">Logistics</span></h1>
-            <p className="text-[10px] font-black text-gray-400 tracking-widest uppercase mt-1">Admin Portal • {shipment.trackingId}</p>
+            <h1 className="text-xl md:text-2xl font-black uppercase tracking-tighter italic text-[#001f3f]">SwiftShip <span className="text-orange-600 hidden sm:inline">Console.</span><span className="text-orange-600 sm:hidden">Cnsl.</span></h1>
+            <div className="flex items-center gap-2">
+              <span className="w-1.5 h-1.5 bg-orange-500 rounded-full animate-pulse" />
+              <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Operator Session: Admin HQ</span>
+            </div>
+          </div>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="bg-slate-50 px-6 py-3 rounded-2xl border border-slate-100">
+            <span className="text-[10px] font-black text-[#001f3f] uppercase tracking-widest">{shipment.trackingId}</span>
           </div>
         </div>
       </nav>
 
-      <main className="max-w-6xl mx-auto px-6 mt-12 grid grid-cols-1 lg:grid-cols-3 gap-12">
+      <main className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-3 gap-12">
         {/* Update Form */}
-        <div className="lg:col-span-2 space-y-10">
-          <div className="bg-white rounded-3xl md:rounded-[3rem] shadow-2xl border border-gray-100 p-6 md:p-12 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/5 rounded-full -mr-16 -mt-16 blur-3xl" />
-            <h2 className="text-xl md:text-2xl font-black text-[#001f3f] mb-8 md:mb-10 flex items-center gap-4 uppercase tracking-tighter italic">
-              <div className="bg-[#001f3f] p-3 rounded-2xl shadow-xl rotate-3">
-                <Package className="w-6 h-6 text-orange-500" />
+        <div className="lg:col-span-2 space-y-12">
+          <div className="nexus-card rounded-[3.5rem] border-slate-200 p-8 md:p-14 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-48 h-48 bg-orange-600/5 rounded-full -mr-24 -mt-24 blur-3xl opacity-50" />
+            <h2 className="text-3xl font-black text-[#001f3f] mb-12 flex items-center gap-6 uppercase tracking-tighter italic">
+              <div className="bg-[#001f3f] p-4 rounded-3xl shadow-2xl">
+                <Package className="w-8 h-8 text-orange-500" />
               </div>
-              Shipment Meta Information
+              Manifest Meta Information
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-              <div className="space-y-3">
-                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">Shipment Type</label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+              <div className="space-y-4">
+                <label className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 ml-2">Transport Protocol</label>
                 <select 
                   value={shipment.type}
                   onChange={(e) => handleMetaUpdate({ type: e.target.value as 'Flight' | 'Shipment' })}
-                  className="w-full px-8 py-5 bg-gray-50 rounded-2xl outline-none focus:ring-4 ring-orange-500/10 font-black text-[#001f3f] appearance-none cursor-pointer border border-transparent focus:border-orange-500/20 transition-all"
+                  className="w-full px-8 py-6 bg-slate-50 rounded-3xl outline-none focus:ring-4 ring-orange-600/10 font-black text-[#001f3f] appearance-none cursor-pointer border border-slate-100 focus:border-orange-600/20 transition-all uppercase tracking-widest"
                 >
-                  <option value="Shipment">Sea/Land Shipment</option>
-                  <option value="Flight">Air Flight</option>
+                  <option value="Shipment">Industrial Sea/Land</option>
+                  <option value="Flight">Global Air Priority</option>
                 </select>
               </div>
-              <div className="space-y-3">
-                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">User ID (Link to Account)</label>
+              <div className="space-y-4">
+                <label className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 ml-2">Operator Mapping (User UID)</label>
                 <input 
                   type="text" 
                   value={shipment.userId || ''}
                   onChange={(e) => setShipment({...shipment, userId: e.target.value})}
                   onBlur={(e) => handleMetaUpdate({ userId: e.target.value })}
-                  placeholder="Enter User UID"
-                  className="w-full px-8 py-5 bg-gray-50 rounded-2xl outline-none focus:ring-4 ring-orange-500/10 font-bold text-[#001f3f] border border-transparent focus:border-orange-500/20 transition-all"
+                  placeholder="LINK TO OPERATOR"
+                  className="w-full px-8 py-6 bg-slate-50 rounded-3xl outline-none focus:ring-4 ring-orange-600/10 font-black text-[#001f3f] border border-slate-100 focus:border-orange-600/20 transition-all uppercase tracking-widest placeholder:text-slate-200"
                 />
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-3xl md:rounded-[3rem] shadow-2xl border border-gray-100 p-6 md:p-12 relative overflow-hidden">
-            <div className="absolute bottom-0 left-0 w-32 h-32 bg-orange-500/5 rounded-full -ml-16 -mb-16 blur-3xl" />
-            <h2 className="text-xl md:text-2xl font-black text-[#001f3f] mb-8 md:mb-10 flex items-center gap-4 uppercase tracking-tighter italic">
-              <div className="bg-orange-500 p-3 rounded-2xl shadow-xl -rotate-3">
-                <Truck className="w-6 h-6 text-white" />
+          <div className="nexus-card rounded-[3.5rem] border-slate-200 p-8 md:p-14 relative overflow-hidden">
+            <h2 className="text-3xl font-black text-[#001f3f] mb-12 flex items-center gap-6 uppercase tracking-tighter italic">
+              <div className="bg-orange-600 p-4 rounded-3xl shadow-2xl">
+                <Truck className="w-8 h-8 text-[#001f3f]" />
               </div>
-              Update Status & Location
+              Status Injection
             </h2>
 
-            <form onSubmit={handleUpdateStatus} className="space-y-10">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                <div className="space-y-3">
-                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">New Status</label>
+            <form onSubmit={handleUpdateStatus} className="space-y-12">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <div className="space-y-4">
+                  <label className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 ml-2">Operational State</label>
                   <select 
                     value={newStatus}
                     onChange={(e) => setNewStatus(e.target.value as ShipmentStatus)}
-                    className="w-full px-8 py-5 bg-gray-50 rounded-2xl outline-none focus:ring-4 ring-orange-500/10 font-black text-[#001f3f] appearance-none cursor-pointer border border-transparent focus:border-orange-500/20 transition-all"
+                    className="w-full px-8 py-6 bg-slate-50 rounded-3xl outline-none focus:ring-4 ring-orange-600/10 font-black text-[#001f3f] appearance-none cursor-pointer border border-slate-100 focus:border-orange-600/20 transition-all uppercase tracking-widest italic"
                   >
                     {STATUS_OPTIONS.map(status => (
                       <option key={status} value={status}>{status}</option>
                     ))}
                   </select>
                 </div>
-                <div className="space-y-3">
-                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">Current Location</label>
-                  <div className="relative">
-                    <MapPin className="absolute left-6 top-1/2 -translate-y-1/2 text-orange-500 w-5 h-5" />
+                <div className="space-y-4">
+                  <label className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 ml-2">Geospatial Coordinate</label>
+                  <div className="relative group">
+                    <MapPin className="absolute left-8 top-1/2 -translate-y-1/2 text-orange-600 w-6 h-6" />
                     <input 
                       required
                       type="text" 
                       value={location}
                       onChange={(e) => setLocation(e.target.value)}
-                      placeholder="e.g., London Hub, UK"
-                      className="w-full pl-16 pr-8 py-5 bg-gray-50 rounded-2xl outline-none focus:ring-4 ring-orange-500/10 font-bold text-[#001f3f] border border-transparent focus:border-orange-500/20 transition-all"
+                      placeholder="e.g. Dubai Central"
+                      className="w-full pl-20 pr-8 py-6 bg-slate-50 rounded-3xl outline-none focus:ring-4 ring-orange-600/10 font-black text-[#001f3f] border border-slate-100 focus:border-orange-600/20 transition-all uppercase tracking-widest placeholder:text-slate-200"
                     />
                   </div>
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">Update Description</label>
+              <div className="space-y-4">
+                <label className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 ml-2">Operation Summary</label>
                 <textarea 
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Describe the current state of the shipment..."
-                  className="w-full px-8 py-5 bg-gray-50 rounded-3xl outline-none focus:ring-4 ring-orange-500/10 font-bold text-[#001f3f] border border-transparent focus:border-orange-500/20 transition-all min-h-[140px] resize-none"
+                  placeholder="ENTRY LOG DESCRIPTION"
+                  className="w-full px-8 py-6 bg-slate-50 rounded-[2.5rem] outline-none focus:ring-4 ring-orange-600/10 font-black text-[#001f3f] border border-slate-100 focus:border-orange-600/20 transition-all min-h-[160px] resize-none uppercase tracking-widest placeholder:text-slate-200"
                 />
               </div>
 
-              <div className="space-y-3">
-                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-1">Visual Proof (Photo)</label>
-                <div className="flex items-start gap-8">
-                  <label className="flex-1 flex flex-col items-center justify-center border-4 border-dashed border-gray-100 rounded-[2.5rem] p-12 hover:border-orange-500 hover:bg-orange-50/30 transition-all cursor-pointer group">
+              <div className="space-y-6">
+                <label className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 ml-2 block">Asset Verification (Photo Proof)</label>
+                <div className="flex flex-col md:flex-row items-center gap-10">
+                  <label className="w-full md:w-auto flex-1 flex flex-col items-center justify-center border-4 border-dashed border-slate-100 rounded-[3rem] p-16 hover:border-orange-600 hover:bg-slate-50 transition-all cursor-pointer group">
                     <input type="file" accept="image/*" onChange={handlePhotoChange} className="hidden" />
-                    <div className="bg-white p-4 rounded-2xl shadow-xl mb-4 group-hover:scale-110 transition-transform">
-                      <Camera className="w-10 h-10 text-orange-500" />
+                    <div className="bg-white p-5 rounded-3xl shadow-xl mb-6 group-hover:scale-110 transition-transform">
+                      <Camera className="w-10 h-10 text-orange-600" />
                     </div>
-                    <span className="text-sm font-black text-[#001f3f] uppercase tracking-widest italic">Upload Proof</span>
-                    <span className="text-[10px] text-gray-400 mt-2 uppercase tracking-widest font-bold">JPG, PNG up to 5MB</span>
+                    <span className="text-xs font-black text-[#001f3f] uppercase tracking-widest italic">Inject Asset Imagery</span>
+                    <span className="text-[10px] text-slate-300 mt-2 uppercase tracking-widest font-black">Industrial Standard Audit</span>
                   </label>
                   
                   {photoPreview && (
-                    <div className="w-48 h-48 rounded-[2.5rem] overflow-hidden border-8 border-white shadow-2xl relative group">
+                    <div className="w-full md:w-64 aspect-square rounded-[3rem] overflow-hidden border-8 border-white shadow-2xl relative group">
                       <img src={photoPreview} alt="Preview" className="w-full h-full object-cover" />
                       <button 
                         type="button"
                         onClick={() => { setPhoto(null); setPhotoPreview(null); }}
-                        className="absolute inset-0 bg-[#001f3f]/80 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white font-black uppercase tracking-widest text-[10px]"
+                        className="absolute inset-0 bg-[#001f3f]/90 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white font-black uppercase tracking-widest text-xs"
                       >
-                        Remove
+                        Purge Image
                       </button>
                     </div>
                   )}
@@ -324,17 +331,14 @@ export default function AdminShipment() {
               <button 
                 disabled={updating}
                 type="submit"
-                className="w-full bg-[#001f3f] text-white py-6 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-orange-500 transition-all shadow-2xl flex items-center justify-center gap-4 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
+                className="w-full bg-[#001f3f] text-white py-8 rounded-3xl font-black uppercase tracking-widest text-xs hover:bg-orange-600 transition-all shadow-2xl shadow-indigo-900/20 flex items-center justify-center gap-4 disabled:opacity-50 group active:scale-95"
               >
                 {updating ? (
-                  <>
-                    <Loader2 className="w-6 h-6 animate-spin" />
-                    Processing Update...
-                  </>
+                  <Loader2 className="w-6 h-6 animate-spin text-orange-600" />
                 ) : (
                   <>
-                    <Send className="w-6 h-6" />
-                    Post Update
+                    <Send className="w-6 h-6 text-orange-600 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                    Execute Status Pulse
                   </>
                 )}
               </button>
@@ -342,26 +346,30 @@ export default function AdminShipment() {
           </div>
 
           {/* History Preview */}
-          <div className="bg-white rounded-3xl md:rounded-[3rem] shadow-2xl border border-gray-100 p-6 md:p-12">
-            <h3 className="text-xl md:text-2xl font-black text-[#001f3f] mb-8 md:mb-10 uppercase tracking-tighter italic">Shipment <span className="text-orange-500">History</span></h3>
-            <div className="space-y-10">
+          <div className="nexus-card rounded-[3.5rem] border-slate-200 p-8 md:p-14">
+            <h3 className="text-3xl font-black text-[#001f3f] mb-12 uppercase tracking-tighter italic leading-none text-right">Event <br /> <span className="text-orange-600">Manifest.</span></h3>
+            <div className="space-y-12">
               {(shipment.history || []).slice().reverse().map((event, i) => (
-                <div key={i} className="flex gap-8 group">
+                <div key={i} className="flex gap-10 group">
                   <div className="flex flex-col items-center">
-                    <div className="w-12 h-12 rounded-2xl bg-[#001f3f] shadow-xl flex items-center justify-center text-orange-500 group-hover:scale-110 transition-transform">
-                      <CheckCircle2 className="w-6 h-6" />
+                    <div className="w-14 h-14 rounded-2xl bg-[#001f3f] shadow-2xl flex items-center justify-center text-orange-600 group-hover:scale-110 group-hover:rotate-6 transition-all border-4 border-white">
+                      <CheckCircle2 className="w-7 h-7" />
                     </div>
-                    {i !== (shipment.history || []).length - 1 && <div className="w-1 flex-1 bg-gray-100 my-3 rounded-full"></div>}
+                    {i !== (shipment.history || []).length - 1 && <div className="w-1.5 flex-1 bg-slate-50 my-4 rounded-full group-hover:bg-orange-600/20 transition-colors"></div>}
                   </div>
-                  <div className="flex-1 pb-10">
-                    <div className="flex justify-between items-start mb-3">
-                      <h4 className="text-xl font-black text-[#001f3f] uppercase tracking-tight italic">{event.status}</h4>
-                      <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest bg-gray-50 px-3 py-1 rounded-full">{format(new Date(event.timestamp), 'MMM d, HH:mm')}</span>
+                  <div className="flex-1 pb-12">
+                    <div className="flex justify-between items-start mb-4">
+                      <h4 className="text-2xl font-black text-[#001f3f] uppercase tracking-tighter italic leading-none">{event.status}</h4>
+                      <div className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] bg-slate-50 px-4 py-2 rounded-full border border-slate-100 flex items-center gap-2">
+                        <Clock className="w-3 h-3 text-orange-600" />
+                        {format(new Date(event.timestamp), 'MMM dd | HH:mm')}
+                      </div>
                     </div>
-                    <p className="text-sm text-gray-500 font-bold leading-relaxed mb-4 uppercase tracking-wide">{event.description}</p>
+                    <p className="text-xs text-slate-500 font-black leading-relaxed mb-6 uppercase tracking-widest italic">{event.description}</p>
                     {event.photoUrl && (
-                      <div className="relative w-48 h-32 rounded-2xl overflow-hidden shadow-xl border-4 border-white">
+                      <div className="relative w-64 aspect-video rounded-[2rem] overflow-hidden shadow-2xl border-4 border-white group-hover:scale-[1.02] transition-transform">
                         <img src={event.photoUrl} alt="Proof" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                        <div className="absolute inset-0 ring-1 ring-inset ring-black/10 rounded-[2rem]" />
                       </div>
                     )}
                   </div>
@@ -449,14 +457,14 @@ export default function AdminShipment() {
           </div>
         </div>
 
-        {/* Shipment Details Sidebar */}
-        <div className="space-y-10">
+        {/* Global Details Sidebar */}
+        <div className="space-y-12">
           {shipment.productImage && (
-            <div className="bg-white rounded-[3rem] shadow-2xl border border-gray-100 p-2 overflow-hidden">
-              <div className="aspect-video w-full rounded-[2.5rem] overflow-hidden border-4 border-white shadow-lg">
+            <div className="nexus-card p-4 rounded-[3.5rem] border-slate-200">
+              <div className="aspect-[4/3] w-full rounded-[2.5rem] overflow-hidden border-4 border-white shadow-xl">
                 <img 
                   src={shipment.productImage} 
-                  alt="Product" 
+                  alt="Asset" 
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"
                 />
@@ -464,69 +472,44 @@ export default function AdminShipment() {
             </div>
           )}
 
-          <div className="bg-white rounded-[3rem] shadow-2xl border border-gray-100 p-10 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-24 h-24 bg-[#001f3f]/5 rounded-full -mr-12 -mt-12 blur-2xl" />
-            <h3 className="text-xl font-black text-[#001f3f] mb-8 uppercase tracking-tighter italic">Product <span className="text-orange-500">Info</span></h3>
+          <div className="nexus-card rounded-[3.5rem] border-slate-200 p-10 md:p-14 relative overflow-hidden">
+            <h3 className="text-2xl font-black text-[#001f3f] mb-8 uppercase tracking-tighter italic">Asset <span className="text-orange-600">Diagnostics.</span></h3>
+            <div className="space-y-10">
+              <div className="pb-8 border-b border-slate-50">
+                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 block mb-4 italic">Designation</span>
+                <p className="font-black text-2xl text-[#001f3f] italic leading-tight uppercase tracking-tighter">{shipment.productName || 'UNIDENTIFIED'}</p>
+              </div>
+              <div className="grid grid-cols-2 gap-8">
+                <div>
+                  <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 block mb-4 italic">Operational Mass</span>
+                  <p className="font-black text-lg text-[#001f3f] italic uppercase">{shipment.weight ? `${shipment.weight}_KG` : 'N/A'}</p>
+                </div>
+                <div>
+                  <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 block mb-4 italic">Dim_X_Y_Z</span>
+                  <p className="font-black text-lg text-[#001f3f] italic uppercase">{shipment.dimensions || 'N/A'}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-[#001f3f] text-white rounded-[4rem] p-12 shadow-2xl relative overflow-hidden border border-white/5">
+            <div className="absolute top-0 right-0 w-48 h-48 bg-orange-600/20 rounded-full -mr-24 -mt-24 blur-[60px]" />
+            <div className="flex items-center gap-6 mb-10">
+              <div className="bg-orange-600 p-3 rounded-2xl shadow-xl">
+                <AlertCircle className="w-8 h-8 text-[#001f3f]" />
+              </div>
+              <h3 className="text-2xl font-black uppercase tracking-tighter italic">Admin <span className="text-orange-600">Protocol.</span></h3>
+            </div>
             <div className="space-y-6">
-              <div>
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 block mb-2">Product Name</span>
-                <p className="font-black text-[#001f3f] italic">{shipment.productName || 'N/A'}</p>
-              </div>
-              <div>
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 block mb-2">Description</span>
-                <p className="text-xs font-bold text-gray-500 leading-relaxed uppercase tracking-wide">{shipment.productDescription || 'No description provided.'}</p>
-              </div>
-              <div className="grid grid-cols-2 gap-6">
-                <div>
-                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 block mb-2">Weight</span>
-                  <p className="font-black text-[#001f3f] text-sm italic">{shipment.weight ? `${shipment.weight} kg` : 'N/A'}</p>
-                </div>
-                <div>
-                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 block mb-2">Dimensions</span>
-                  <p className="font-black text-[#001f3f] text-sm italic">{shipment.dimensions || 'N/A'}</p>
-                </div>
+              <p className="text-[11px] font-black leading-relaxed opacity-40 uppercase tracking-[0.2em] italic">
+                Verified Personnel Action Required. All logs are synced to Global Manifest V4.2. Precision is the primary directive.
+              </p>
+              <div className="h-px bg-white/10" />
+              <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest opacity-60">
+                <span>Access Node:</span>
+                <span className="text-orange-500">SecureHQ_01</span>
               </div>
             </div>
-          </div>
-
-          <div className="bg-white rounded-[3rem] shadow-2xl border border-gray-100 p-10 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-24 h-24 bg-[#001f3f]/5 rounded-full -mr-12 -mt-12 blur-2xl" />
-            <h3 className="text-xl font-black text-[#001f3f] mb-8 uppercase tracking-tighter italic">Shipment <span className="text-orange-500">Details</span></h3>
-            <div className="space-y-8">
-              <div>
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 block mb-2">Customer Account</span>
-                <p className="font-black text-[#001f3f] truncate italic">{shipment.customerEmail}</p>
-              </div>
-              <div className="grid grid-cols-2 gap-6">
-                <div>
-                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 block mb-2">Origin</span>
-                  <p className="font-black text-[#001f3f] text-sm italic">{shipment.origin}</p>
-                </div>
-                <div>
-                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 block mb-2">Destination</span>
-                  <p className="font-black text-[#001f3f] text-sm italic">{shipment.destination}</p>
-                </div>
-              </div>
-              <div>
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 block mb-2">Registered On</span>
-                <p className="font-black text-[#001f3f] text-sm italic">
-                  {format(new Date(shipment.createdAt), 'PPP p')}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-[#001f3f] text-white rounded-[3rem] p-10 shadow-2xl relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/20 rounded-full -mr-16 -mt-16 blur-3xl" />
-            <div className="flex items-center gap-4 mb-6">
-              <div className="bg-orange-500 p-2 rounded-xl shadow-lg">
-                <AlertCircle className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="text-xl font-black uppercase tracking-tighter italic">Admin <span className="text-orange-500">Protocol</span></h3>
-            </div>
-            <p className="text-xs font-bold leading-relaxed opacity-80 uppercase tracking-widest">
-              Ensure all photo uploads are high resolution. Status updates are broadcasted to elite clients immediately. Maintain professional communication in descriptions.
-            </p>
           </div>
         </div>
       </main>

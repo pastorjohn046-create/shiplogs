@@ -155,7 +155,7 @@ export default function App() {
                 className="absolute bottom-20 right-0 w-80 bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden"
               >
                 <div className="bg-[#001f3f] p-6 text-white">
-                  <h3 className="text-xl font-black uppercase tracking-tighter italic">Nexus <span className="text-orange-500">Support</span></h3>
+                  <h3 className="text-xl font-black uppercase tracking-tighter italic">SwiftShip <span className="text-orange-500">Support</span></h3>
                   <p className="text-xs text-gray-400 mt-1 uppercase tracking-widest font-bold">24/7 Live Assistance</p>
                 </div>
                 <div className="p-6 space-y-4">
@@ -163,7 +163,7 @@ export default function App() {
                     Need immediate help? Connect with our team directly on Telegram for real-time support.
                   </p>
                   <a 
-                    href="https://t.me/NexusLogisticsSupport" 
+                    href="https://t.me/PeakLogisticsPartners" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="flex items-center justify-between bg-blue-500 text-white p-4 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-blue-600 transition-all group"
