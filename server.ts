@@ -20,8 +20,28 @@ const DATA_FILE = path.join(process.cwd(), "data.json");
 const initialData = {
   users: [],
   shipments: [],
-  tickets: []
+  tickets: [],
+  logs: []
 };
+
+// ... existing code ...
+
+async function addLog(action: string, details: string, user?: any) {
+  try {
+    const data = await getData();
+    const log = {
+      id: Math.random().toString(36).substr(2, 9),
+      timestamp: new Date().toISOString(),
+      action,
+      details,
+      user: user ? user.email : "System"
+    };
+    data.logs = [log, ...(data.logs || [])].slice(0, 100); // Keep last 100 logs
+    await saveData(data);
+  } catch (err) {
+    console.error("Error adding log:", err);
+  }
+}
 
 // Cache for data
 let dataCache: any = null;
@@ -188,6 +208,8 @@ async function startServer() {
       data.users.push(newUser);
       await saveData(data);
       
+      await addLog("User Registration", `New user registered: ${email}`, { email });
+
       const token = jwt.sign({ uid: newUser.uid, email: newUser.email, role: newUser.role }, JWT_SECRET, { expiresIn: "30d" });
       res.cookie("token", token, { 
         httpOnly: true, 
@@ -216,6 +238,7 @@ async function startServer() {
         sameSite: "none",
         maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
       });
+      await addLog("User Login", `User logged in: ${email}`, { email });
       res.json({ uid: user.uid, email: user.email, role: user.role });
     } catch (err: any) {
       res.status(400).json({ error: err.errors?.[0]?.message || "Invalid input" });
@@ -244,6 +267,15 @@ async function startServer() {
       res.json(data.users.map((u: any) => ({ uid: u.uid, email: u.email, role: u.role })));
     } catch (err) {
       res.status(500).json({ error: "Failed to fetch users" });
+    }
+  });
+
+  app.get("/api/admin/logs", authenticate, isAdmin, async (req, res) => {
+    try {
+      const data = await getData();
+      res.json(data.logs || []);
+    } catch (err) {
+      res.status(500).json({ error: "Failed to fetch logs" });
     }
   });
 
@@ -294,6 +326,7 @@ async function startServer() {
       };
       data.shipments.push(newShipment);
       await saveData(data);
+      await addLog("Shipment Created", `Created shipment: ${newShipment.trackingId}`, req.user);
       res.json(newShipment);
     } catch (err: any) {
       res.status(400).json({ error: err.errors?.[0]?.message || "Invalid input" });

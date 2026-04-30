@@ -35,18 +35,18 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-[#050505] flex items-center justify-center p-4 md:p-6 relative overflow-hidden font-sans">
       {/* Tactical Background Visualizer */}
-      <div className="absolute inset-0 z-0 select-none pointer-events-none">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&q=80')] bg-cover opacity-[0.03] grayscale scale-110" />
+      <div className="absolute inset-0 z-0 select-none pointer-events-none overflow-hidden">
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&q=80')] bg-cover opacity-[0.03] grayscale scale-110 pointer-events-none" />
         
         {/* Animated Scanning Line */}
         <motion.div 
           animate={{ top: ['-10%', '110%'] }}
           transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-          className="absolute left-0 right-0 h-px bg-orange-600/20 z-10"
+          className="absolute left-0 right-0 h-px bg-orange-600/20 z-10 pointer-events-none"
         />
 
         {/* Animated Grid Lines */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.01)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:50px_50px]" />
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.01)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:50px_50px] pointer-events-none" />
         
         {[...Array(4)].map((_, i) => (
           <motion.div
@@ -56,7 +56,7 @@ export default function Login() {
               scale: [1, 1.2, 1],
             }}
             transition={{ duration: 20 + i * 5, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute w-[800px] h-[800px] bg-orange-600/[0.02] rounded-full blur-[180px]"
+            className="absolute w-[800px] h-[800px] bg-orange-600/[0.02] rounded-full blur-[180px] pointer-events-none"
             style={{ 
               top: `${(i * 30) % 100}%`, 
               left: `${(i * 40) % 100}%` 
@@ -72,7 +72,7 @@ export default function Login() {
       >
         <div className="bg-black rounded-[2.5rem] border border-white/10 shadow-[0_0_100px_rgba(0,0,0,1)] p-8 md:p-12 overflow-hidden relative">
           {/* Internal Glow */}
-          <div className="absolute -top-24 -left-24 w-48 h-48 bg-orange-600/10 rounded-full blur-[60px]" />
+          <div className="absolute -top-24 -left-24 w-48 h-48 bg-orange-600/10 rounded-full blur-[60px] pointer-events-none" />
           
           <div className="flex flex-col items-center mb-10 md:mb-12 relative z-10">
             <motion.div 

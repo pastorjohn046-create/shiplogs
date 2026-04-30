@@ -13,8 +13,9 @@ export default function AdminDashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'shipments' | 'users'>('shipments');
+  const [activeTab, setActiveTab] = useState<'shipments' | 'users' | 'logs'>('shipments');
   const [users, setUsers] = useState<any[]>([]);
+  const [logs, setLogs] = useState<any[]>([]);
   const [editingShipment, setEditingShipment] = useState<Shipment | null>(null);
   const [updateStatus, setUpdateStatus] = useState<ShipmentStatus | ''>('');
   const [updateDescription, setUpdateDescription] = useState('');
@@ -78,6 +79,18 @@ export default function AdminDashboard() {
     }
   };
 
+  const fetchLogs = async () => {
+    try {
+      const response = await fetch('/api/admin/logs', { credentials: 'include' });
+      if (response.ok) {
+        const data = await response.json();
+        setLogs(data);
+      }
+    } catch (error) {
+      console.error('Error fetching logs:', error);
+    }
+  };
+
   useEffect(() => {
     if (user?.role !== 'admin') {
       navigate('/');
@@ -85,9 +98,11 @@ export default function AdminDashboard() {
     }
     fetchShipments();
     fetchUsers();
+    fetchLogs();
     const interval = setInterval(() => {
       fetchShipments();
       fetchUsers();
+      fetchLogs();
     }, 30000);
     return () => clearInterval(interval);
   }, [user, navigate]);
@@ -337,6 +352,15 @@ export default function AdminDashboard() {
             Registered Users
           </button>
           <button 
+            onClick={() => { setActiveTab('logs'); setIsSidebarOpen(false); }}
+            className={`w-full flex items-center gap-4 px-4 py-4 rounded-2xl font-bold transition-all ${
+              activeTab === 'logs' ? 'bg-orange-500 text-white shadow-lg' : 'text-gray-400 hover:bg-white/5 hover:text-white'
+            }`}
+          >
+            <Clock className="w-5 h-5" />
+            Operations Log
+          </button>
+          <button 
             onClick={() => { navigate('/admin/tickets'); setIsSidebarOpen(false); }}
             className="w-full flex items-center gap-4 px-4 py-4 rounded-2xl text-gray-400 hover:bg-white/5 hover:text-white font-bold transition-all"
           >
@@ -378,12 +402,12 @@ export default function AdminDashboard() {
         <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 md:mb-12 gap-6">
           <div>
             <h1 className="text-3xl md:text-4xl font-black text-[#001f3f] tracking-tight mb-2 uppercase italic">
-              {activeTab === 'shipments' ? 'Shipment Dashboard' : 'User Management'}
+              {activeTab === 'shipments' ? 'Shipment Dashboard' : activeTab === 'users' ? 'User Management' : 'Admin Operations Log'}
             </h1>
             <p className="text-gray-500 font-medium text-sm md:text-base">
               {activeTab === 'shipments' 
                 ? 'Manage and monitor all active shipments in your network.' 
-                : 'View and manage all registered users in the system.'}
+                : activeTab === 'users' ? 'View and manage all registered users in the system.' : 'Real-time audit log of all system and administrative actions.'}
             </p>
           </div>
           {activeTab === 'shipments' && (
@@ -610,7 +634,7 @@ export default function AdminDashboard() {
               </div>
             </div>
           </>
-        ) : (
+        ) : activeTab === 'users' ? (
           <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="hidden md:block">
               <table className="w-full text-left">
@@ -668,6 +692,37 @@ export default function AdminDashboard() {
                   </span>
                 </div>
               ))}
+            </div>
+          </div>
+        ) : (
+          <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="p-8 space-y-6">
+              {logs.length > 0 ? (
+                logs.map((log) => (
+                  <div key={log.id} className="flex gap-6 pb-6 border-b border-gray-50 last:border-0 hover:bg-gray-50/50 p-4 rounded-2xl transition-all">
+                    <div className="h-12 w-12 bg-white shadow-sm border border-gray-100 rounded-xl flex items-center justify-center shrink-0">
+                      <Clock className="w-6 h-6 text-orange-500" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-3 mb-1">
+                        <h4 className="font-black text-[#001f3f] uppercase tracking-tight italic">{log.action}</h4>
+                        <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest bg-gray-50 px-2 py-1 rounded">
+                          {format(new Date(log.timestamp), 'MMM dd, HH:mm:ss')}
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-500 font-medium mb-2">{log.details}</p>
+                      <div className="flex items-center gap-2">
+                        <Users className="w-3 h-3 text-gray-300" />
+                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{log.user}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-20 text-gray-400 font-medium">
+                  No operational records found.
+                </div>
+              )}
             </div>
           </div>
         )}
