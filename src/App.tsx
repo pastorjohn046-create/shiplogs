@@ -75,17 +75,20 @@ export default function App() {
       });
       
       const contentType = res.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/json')) {
+      let data;
+      if (contentType && contentType.includes('application/json')) {
+        data = await res.json();
+      } else {
         const text = await res.text();
-        throw new Error(`Invalid server response: ${text.substring(0, 100)}`);
+        console.error('Login: Invalid server response text:', text);
+        throw new Error(`Invalid response (Status ${res.status}): ${text.substring(0, 150)}`);
       }
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || `Login failed (${res.status})`);
+      if (!res.ok) throw new Error(data.error || `Login failed (Status ${res.status})`);
       setUser(data);
     } catch (err: any) {
       console.error('Login error:', err);
-      throw err;
+      throw new Error(err.message || 'Login failed unexpectedly');
     }
   };
 
@@ -99,17 +102,20 @@ export default function App() {
       });
 
       const contentType = res.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/json')) {
+      let data;
+      if (contentType && contentType.includes('application/json')) {
+        data = await res.json();
+      } else {
         const text = await res.text();
-        throw new Error(`Invalid server response: ${text.substring(0, 100)}`);
+        console.error('Register: Invalid server response text:', text);
+        throw new Error(`Invalid response (Status ${res.status}): ${text.substring(0, 150)}`);
       }
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || `Registration failed (${res.status})`);
+      if (!res.ok) throw new Error(data.error || `Registration failed (Status ${res.status})`);
       setUser(data);
     } catch (err: any) {
       console.error('Registration error:', err);
-      throw err;
+      throw new Error(err.message || 'Registration failed unexpectedly');
     }
   };
 

@@ -172,20 +172,15 @@ async function startServer() {
   app.set('trust proxy', true);
   
   // Security Middlewares
-  app.use(helmet({
-    contentSecurityPolicy: false,
-    crossOriginEmbedderPolicy: false,
-    crossOriginResourcePolicy: { policy: "cross-origin" }
-  }));
+  // Temporarily simplified for debugging
   app.use(cors({
     origin: true,
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
   }));
-  app.use(compression()); // Compress responses
   app.use(morgan("dev")); // Logging
   
-  // Custom API Logging
+  // Custom API Request Logging
   app.use("/api", (req, res, next) => {
     console.log(`[API Request] ${req.method} ${req.path}`);
     next();
@@ -200,10 +195,27 @@ async function startServer() {
     legacyHeaders: false,
     validate: false,
   });
-  app.use("/api/", limiter);
+  // app.use("/api/", limiter); // Temporarily disabled to rule out proxy IP issues
+  app.get("/api/health", (req, res) => res.json({ 
+    status: "ok", 
+    env: process.env.NODE_ENV,
+    timestamp: new Date().toISOString() 
+  }));
 
   app.use(express.json({ limit: "10mb" })); // Increase limit for base64 images
   app.use(cookieParser());
+
+  app.get("/api/debug", (req, res) => {
+    res.json({
+      nodeEnv: process.env.NODE_ENV,
+      port: PORT,
+      cwd: process.cwd(),
+      dataFile: DATA_FILE,
+      dataCacheLoaded: !!dataCache,
+      bcryptWorking: typeof bcrypt.hash === 'function',
+      timestamp: new Date().toISOString()
+    });
+  });
 
   // Auth Middleware
   const authenticate = (req: any, res: any, next: any) => {
@@ -227,12 +239,18 @@ async function startServer() {
 
   // Auth Routes
   app.post("/api/auth/register", async (req, res) => {
+    console.log(`[Auth] Registering user: ${req.body?.email}`);
     try {
+      if (!req.body) throw new Error("Missing request body");
       const { email, password } = registerSchema.parse(req.body);
       const data = await getData();
+      if (!data.users) data.users = [];
+      
       if (data.users.find((u: any) => u.email === email)) {
+        console.warn(`[Auth] Registration failed: User ${email} already exists`);
         return res.status(400).json({ error: "User already exists" });
       }
+      
       const hashedPassword = await bcrypt.hash(password, 10);
       const newUser = {
         uid: Math.random().toString(36).substr(2, 9),
@@ -252,21 +270,34 @@ async function startServer() {
         sameSite: "lax",
         maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
       });
-      return res.json({ uid: newUser.uid, email: newUser.email, role: newUser.role });
+      console.log(`[Auth] Registered: ${email}`);
+      return res.status(201).json({ uid: newUser.uid, email: newUser.email, role: newUser.role });
     } catch (err: any) {
       console.error("Registration error:", err);
-      return res.status(400).json({ error: err.errors?.[0]?.message || "Invalid input or processing error" });
+      return res.status(400).json({ error: err.message || "Registration failed" });
     }
   });
 
   app.post("/api/auth/login", async (req, res) => {
+    console.log(`[Auth] Login attempt: ${req.body?.email}`);
     try {
+      if (!req.body) throw new Error("Missing request body");
       const { email, password } = loginSchema.parse(req.body);
       const data = await getData();
+      if (!data.users) data.users = [];
+      
       const user = data.users.find((u: any) => u.email === email);
-      if (!user || !(await bcrypt.compare(password, user.password))) {
+      if (!user) {
+        console.warn(`[Auth] Login failed: User ${email} not found`);
         return res.status(401).json({ error: "Invalid credentials" });
       }
+
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        console.warn(`[Auth] Login failed: Incorrect password for ${email}`);
+        return res.status(401).json({ error: "Invalid credentials" });
+      }
+
       const token = jwt.sign({ uid: user.uid, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: "30d" });
       res.cookie("token", token, { 
         httpOnly: true, 
@@ -275,10 +306,11 @@ async function startServer() {
         maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
       });
       await addLog("User Login", `User logged in: ${email}`, { email });
+      console.log(`[Auth] Logged in: ${email}`);
       return res.json({ uid: user.uid, email: user.email, role: user.role });
     } catch (err: any) {
       console.error("Login error:", err);
-      return res.status(400).json({ error: err.errors?.[0]?.message || "Invalid input or processing error" });
+      return res.status(400).json({ error: err.message || "Login failed" });
     }
   });
 
@@ -468,6 +500,10 @@ async function startServer() {
     };
     await saveData(data);
     res.json(data.tickets[index]);
+  });
+
+  app.all("/api/*", (req, res) => {
+    res.status(404).json({ error: `API route not found: ${req.method} ${req.path}` });
   });
 
   // Error handling middleware
