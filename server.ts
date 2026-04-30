@@ -182,39 +182,40 @@ async function startServer() {
   
   // Custom API Request Logging
   app.use("/api", (req, res, next) => {
-    console.log(`[API Request] ${req.method} ${req.path}`);
+    console.log(`[API Request] ${req.method} ${req.originalUrl}`);
+    console.log(`[API Headers] Origin: ${req.headers.origin}, Content-Type: ${req.headers['content-type']}`);
     next();
   });
 
   // Rate Limiting
-  const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 10000, // Increased even further
-    message: { error: "Too many requests, please try again later." },
-    standardHeaders: true,
-    legacyHeaders: false,
-    validate: false,
-  });
   // app.use("/api/", limiter); // Temporarily disabled to rule out proxy IP issues
-  app.get("/api/health", (req, res) => res.json({ 
-    status: "ok", 
-    env: process.env.NODE_ENV,
-    timestamp: new Date().toISOString() 
-  }));
+  app.get("/api/health", (req, res) => {
+    res.json({ 
+      status: "ok", 
+      env: process.env.NODE_ENV || "development",
+      port: PORT,
+      timestamp: new Date().toISOString() 
+    });
+  });
 
-  app.use(express.json({ limit: "10mb" })); // Increase limit for base64 images
+  app.use(express.json({ limit: "10mb" }));
   app.use(cookieParser());
 
-  app.get("/api/debug", (req, res) => {
-    res.json({
-      nodeEnv: process.env.NODE_ENV,
-      port: PORT,
-      cwd: process.cwd(),
-      dataFile: DATA_FILE,
-      dataCacheLoaded: !!dataCache,
-      bcryptWorking: typeof bcrypt.hash === 'function',
-      timestamp: new Date().toISOString()
-    });
+  app.get("/api/debug", async (req, res) => {
+    try {
+      const data = await getData();
+      res.json({
+        nodeEnv: process.env.NODE_ENV,
+        port: PORT,
+        cwd: process.cwd(),
+        dataFile: DATA_FILE,
+        userCount: data.users?.length || 0,
+        bcryptWorking: typeof bcrypt.hash === 'function',
+        timestamp: new Date().toISOString()
+      });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
   });
 
   // Auth Middleware
@@ -266,7 +267,7 @@ async function startServer() {
       const token = jwt.sign({ uid: newUser.uid, email: newUser.email, role: newUser.role }, JWT_SECRET, { expiresIn: "30d" });
       res.cookie("token", token, { 
         httpOnly: true, 
-        secure: process.env.NODE_ENV === "production", 
+        secure: false, // Explicitly false for troubleshooting Railway proxy issues
         sameSite: "lax",
         maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
       });
@@ -301,7 +302,7 @@ async function startServer() {
       const token = jwt.sign({ uid: user.uid, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: "30d" });
       res.cookie("token", token, { 
         httpOnly: true, 
-        secure: process.env.NODE_ENV === "production", 
+        secure: false, // Explicitly false for troubleshooting Railway proxy issues
         sameSite: "lax",
         maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
       });
