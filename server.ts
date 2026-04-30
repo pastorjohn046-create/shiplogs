@@ -250,7 +250,7 @@ async function startServer() {
     res.json({ success: true });
   });
 
-  app.get("/api/auth/me", (req, res) => {
+  app.get("/api/auth/me", (req: any, res) => {
     const token = req.cookies.token;
     if (!token) return res.json(null);
     try {
@@ -261,7 +261,7 @@ async function startServer() {
     }
   });
 
-  app.get("/api/admin/users", authenticate, isAdmin, async (req, res) => {
+  app.get("/api/admin/users", authenticate, isAdmin, async (req: any, res) => {
     try {
       const data = await getData();
       res.json(data.users.map((u: any) => ({ uid: u.uid, email: u.email, role: u.role })));
@@ -270,7 +270,7 @@ async function startServer() {
     }
   });
 
-  app.get("/api/admin/logs", authenticate, isAdmin, async (req, res) => {
+  app.get("/api/admin/logs", authenticate, isAdmin, async (req: any, res) => {
     try {
       const data = await getData();
       res.json(data.logs || []);
@@ -314,7 +314,7 @@ async function startServer() {
     res.json(shipment);
   });
 
-  app.post("/api/shipments", authenticate, isAdmin, async (req, res) => {
+  app.post("/api/shipments", authenticate, isAdmin, async (req: any, res) => {
     try {
       const validatedData = shipmentSchema.parse(req.body);
       const data = await getData();
@@ -333,7 +333,7 @@ async function startServer() {
     }
   });
 
-  app.patch("/api/shipments/:id", authenticate, isAdmin, async (req, res) => {
+  app.patch("/api/shipments/:id", authenticate, isAdmin, async (req: any, res) => {
     const data = await getData();
     const index = data.shipments.findIndex((s: any) => s.id === req.params.id);
     if (index === -1) return res.status(404).json({ error: "Not found" });
@@ -346,7 +346,7 @@ async function startServer() {
     res.json(data.shipments[index]);
   });
   
-  app.delete("/api/shipments/:id", authenticate, isAdmin, async (req, res) => {
+  app.delete("/api/shipments/:id", authenticate, isAdmin, async (req: any, res) => {
     const data = await getData();
     const index = data.shipments.findIndex((s: any) => s.id === req.params.id);
     if (index === -1) return res.status(404).json({ error: "Not found" });
@@ -411,7 +411,7 @@ async function startServer() {
     res.json(ticket);
   });
 
-  app.patch("/api/tickets/:id", authenticate, isAdmin, async (req, res) => {
+  app.patch("/api/tickets/:id", authenticate, isAdmin, async (req: any, res) => {
     const data = await getData();
     const index = data.tickets.findIndex((t: any) => t.id === req.params.id);
     if (index === -1) return res.status(404).json({ error: "Not found" });
