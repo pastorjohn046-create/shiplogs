@@ -93,7 +93,7 @@ export default function Tracking() {
     if (!shipment) return;
     const doc = new jsPDF();
     doc.setFontSize(22);
-    doc.text('SwiftShip Logistics Shipping Receipt', 20, 20);
+    doc.text('Peak Logistics Partners Shipping Receipt', 20, 20);
     doc.setFontSize(12);
     doc.text(`Tracking ID: ${shipment.trackingId}`, 20, 35);
     doc.text(`Status: ${shipment.status}`, 20, 45);
@@ -144,7 +144,7 @@ export default function Tracking() {
             <ArrowLeft className="w-5 h-5 md:w-6 md:h-6 text-[#001f3f]" />
           </button>
           <div className="flex flex-col">
-            <h1 className="text-base md:text-xl font-black uppercase tracking-tighter italic text-[#001f3f]">SwiftShip <span className="text-orange-600 hidden sm:inline">Logistics</span><span className="text-orange-600 sm:hidden">Lg.</span></h1>
+            <h1 className="text-base md:text-xl font-black uppercase tracking-tighter italic text-[#001f3f]">Peak <span className="text-orange-600 hidden sm:inline">Logistics</span><span className="text-orange-600 sm:hidden">Lg.</span></h1>
             <div className="flex items-center gap-1.5 md:gap-2">
               <span className="w-1 md:w-1.5 h-1 md:h-1.5 bg-green-500 rounded-full animate-pulse" />
               <span className="text-[7px] md:text-[8px] font-black text-slate-400 uppercase tracking-widest">Live Sync</span>
@@ -219,7 +219,7 @@ export default function Tracking() {
                 <div className="w-2.5 h-2.5 md:w-3 md:h-3 bg-green-500 rounded-full animate-pulse"></div>
                 <span className="text-[#001f3f] font-black uppercase text-xs md:text-sm tracking-widest italic">{shipment.status}</span>
               </div>
-              <span className="text-[8px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest px-2 sm:px-8 text-center sm:text-right w-full sm:w-auto">Last: {shipment.history?.[shipment.history.length-1]?.location || 'SwiftShip HQ'}</span>
+              <span className="text-[8px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest px-2 sm:px-8 text-center sm:text-right w-full sm:w-auto">Last: {shipment.history?.[shipment.history.length-1]?.location || 'Peak HQ'}</span>
             </div>
           </div>
 
@@ -392,7 +392,7 @@ export default function Tracking() {
             <div className="nexus-card p-8 md:p-12 border-slate-200">
               <h3 className="text-xl md:text-2xl font-black text-[#001f3f] mb-4 md:mb-6 uppercase tracking-tight italic">Support Uplink</h3>
               <p className="text-slate-400 font-medium text-xs md:text-sm mb-8 md:mb-10 leading-relaxed italic">
-                SwiftShip tactical support is active 24/7. Connect for real-time asset inquiries via our direct command grid.
+                Peak tactical support is active 24/7. Connect for real-time asset inquiries via our direct command grid.
               </p>
               <div className="flex flex-col gap-3">
                 <button 

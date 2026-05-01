@@ -202,7 +202,7 @@ export default function AdminShipment() {
             <ArrowLeft className="w-6 h-6 text-[#001f3f] group-hover:-translate-x-1 transition-transform" />
           </button>
           <div>
-            <h1 className="text-xl md:text-2xl font-black uppercase tracking-tighter italic text-[#001f3f]">SwiftShip <span className="text-orange-600 hidden sm:inline">Console.</span><span className="text-orange-600 sm:hidden">Cnsl.</span></h1>
+            <h1 className="text-xl md:text-2xl font-black uppercase tracking-tighter italic text-[#001f3f]">Peak <span className="text-orange-600 hidden sm:inline">Console.</span><span className="text-orange-600 sm:hidden">Cnsl.</span></h1>
             <div className="flex items-center gap-2">
               <span className="w-1.5 h-1.5 bg-orange-500 rounded-full animate-pulse" />
               <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Operator Session: Admin HQ</span>

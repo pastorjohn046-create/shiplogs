@@ -46,7 +46,7 @@ export default function Profile() {
           <button onClick={() => navigate(-1)} className="p-2 md:p-3 hover:bg-white/10 rounded-xl transition-colors">
             <ArrowLeft className="w-5 h-5 md:w-6 md:h-6" />
           </button>
-          <h1 className="text-base md:text-lg font-black uppercase tracking-tighter italic">SwiftShip <span className="text-orange-500">Identity</span></h1>
+          <h1 className="text-base md:text-lg font-black uppercase tracking-tighter italic">Peak <span className="text-orange-500">Identity</span></h1>
         </div>
         <button 
           onClick={handleLogout}

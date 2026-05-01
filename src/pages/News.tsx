@@ -56,7 +56,7 @@ export default function News() {
           <button onClick={() => navigate(-1)} className="p-3 hover:bg-white/10 rounded-xl transition-colors">
             <ArrowLeft className="w-6 h-6" />
           </button>
-          <h1 className="text-xl font-black uppercase tracking-tighter italic">SwiftShip <span className="text-orange-500">Dispatch</span></h1>
+          <h1 className="text-xl font-black uppercase tracking-tighter italic">Peak <span className="text-orange-500">Dispatch</span></h1>
         </div>
         <div className="bg-orange-500 p-2 rounded-xl shadow-lg rotate-12">
           <Globe className="w-5 h-5 text-white animate-spin-slow" />

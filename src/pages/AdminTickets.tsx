@@ -123,7 +123,7 @@ export default function AdminTickets() {
           <div className="bg-orange-600 p-2 rounded-xl">
             <Zap className="w-5 h-5 text-[#001f3f]" />
           </div>
-          <span className="text-xl font-black tracking-tighter uppercase italic">SwiftShip<span className="text-orange-600">Console.</span></span>
+          <span className="text-xl font-black tracking-tighter uppercase italic">Peak<span className="text-orange-600">Console.</span></span>
         </div>
         <div className="flex items-center gap-2">
           {selectedTicket && (
@@ -152,7 +152,7 @@ export default function AdminTickets() {
           <div className="bg-orange-600 p-3 rounded-2xl shadow-2xl rotate-3">
             <Zap className="w-6 h-6 text-[#001f3f]" />
           </div>
-          <span className="text-2xl font-black tracking-tighter uppercase italic">SwiftShip<span className="text-orange-600">HQ.</span></span>
+          <span className="text-2xl font-black tracking-tighter uppercase italic">Peak<span className="text-orange-600">HQ.</span></span>
         </div>
         
         <nav className="flex-1 p-8 space-y-4 overflow-y-auto">

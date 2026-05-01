@@ -89,7 +89,7 @@ export default function Dashboard() {
           <div>
             <div className="text-orange-600 font-black uppercase tracking-[0.4em] md:tracking-[0.6em] text-[8px] md:text-[10px] mb-4 md:mb-6">Operations Terminal</div>
             <h1 className="text-4xl sm:text-5xl md:text-7xl font-black text-[#001f3f] uppercase tracking-tighter italic leading-[0.9] md:leading-none">
-              SwiftShip <span className="text-slate-300 block sm:inline">Console.</span>
+              Peak <span className="text-slate-300 block sm:inline">Console.</span>
             </h1>
             <div className="flex flex-wrap items-center gap-3 md:gap-4 mt-6 md:mt-8">
               <div className="flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 bg-slate-50 rounded-full border border-slate-100">
@@ -280,7 +280,7 @@ export default function Dashboard() {
               <div className="relative z-10 text-center xl:text-left">
                 <div className="text-orange-500 font-black uppercase tracking-[0.4em] md:tracking-[0.6em] text-[8px] md:text-[10px] mb-4 md:mb-6">24/7 Command Support</div>
                 <h3 className="text-3xl md:text-5xl font-black mb-4 md:mb-6 uppercase tracking-tighter italic leading-none">Complex <br /> <span className="text-slate-500">Inquiry?</span></h3>
-                <p className="text-slate-400 font-medium max-w-sm text-base md:text-lg leading-relaxed italic mx-auto xl:mx-0">Connect directly to SwiftShip Tactical HQ for real-time problem resolution.</p>
+                <p className="text-slate-400 font-medium max-w-sm text-base md:text-lg leading-relaxed italic mx-auto xl:mx-0">Connect directly to Peak Tactical HQ for real-time problem resolution.</p>
               </div>
               <Link to="/support" className="w-full xl:w-auto relative z-10 bg-orange-600 text-white px-8 md:px-16 py-5 md:py-8 rounded-2xl md:rounded-3xl font-black uppercase tracking-widest text-[10px] md:text-xs hover:bg-orange-500 transition-all shadow-2xl shadow-orange-600/30 whitespace-nowrap text-center">
                 Secure Uplink Request

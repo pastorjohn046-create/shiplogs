@@ -71,7 +71,7 @@ export default function ConsignmentHistory() {
           <button onClick={() => navigate(-1)} className="p-3 hover:bg-white/10 rounded-xl transition-colors">
             <ArrowLeft className="w-6 h-6" />
           </button>
-          <h1 className="text-xl font-black uppercase tracking-tighter italic">SwiftShip <span className="text-orange-500">Manifest</span></h1>
+          <h1 className="text-xl font-black uppercase tracking-tighter italic">Peak <span className="text-orange-500">Manifest</span></h1>
         </div>
         <div className="bg-orange-500 px-4 py-2 rounded-xl flex items-center gap-2 shadow-lg rotate-2">
           <Activity className="w-4 h-4 text-white animate-pulse" />

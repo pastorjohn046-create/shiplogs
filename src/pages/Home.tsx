@@ -73,7 +73,7 @@ export default function Home() {
               <Zap className="w-6 h-6 text-orange-500" />
             </motion.div>
             <span className={`text-base md:text-xl font-black tracking-tighter uppercase ${isScrolled ? 'text-[#001f3f]' : 'text-white'}`}>
-              SwiftShip<span className="text-orange-500 hidden sm:inline">Logistics</span><span className="text-orange-500 sm:hidden">Lg.</span>
+              Peak<span className="text-orange-500 hidden sm:inline">Logistics</span><span className="text-orange-500 sm:hidden">Lg.</span>
             </span>
           </div>
           
@@ -357,7 +357,7 @@ export default function Home() {
                   <Globe className="w-16 h-16 text-orange-500 mb-10 animate-spin-slow" />
                   <h4 className="text-3xl font-black text-white uppercase tracking-tighter italic mb-6">Autonomous Global <span className="text-orange-500">Grid.</span></h4>
                   <p className="text-white/60 font-medium leading-relaxed mb-10 text-lg">
-                    Our proprietary SwiftShip AI orchestrates over 1.2 million data points per second, ensuring your cargo bypasses global bottlenecks automatically.
+                    Our proprietary Peak AI orchestrates over 1.2 million data points per second, ensuring your cargo bypasses global bottlenecks automatically.
                   </p>
                   <div className="grid grid-cols-2 gap-6">
                     <div className="p-6 bg-white/5 rounded-3xl border border-white/5">
@@ -409,7 +409,7 @@ export default function Home() {
         >
           <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.1),transparent_70%)]" />
           <h2 className="text-5xl md:text-9xl font-black text-white leading-[0.85] uppercase tracking-tighter italic mb-12 relative z-10">
-            SwiftShip <br />
+            Peak <br />
             <span className="text-orange-500">Inbound.</span>
           </h2>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6 relative z-10">
@@ -438,7 +438,7 @@ export default function Home() {
                 <div className="bg-orange-600 p-3 rounded-2xl shadow-xl">
                   <Zap className="w-8 h-8 text-[#001f3f]" />
                 </div>
-                <span className="text-3xl font-black tracking-tighter uppercase">SwiftShip<span className="text-orange-500">Logistics</span></span>
+                <span className="text-3xl font-black tracking-tighter uppercase">Peak<span className="text-orange-500">Logistics</span></span>
               </div>
               <p className="text-white/40 max-w-sm leading-relaxed font-medium text-lg italic">
                 Defined by Operational Precision. Driven by Global Intelligence. swiftship_logistics_global_protocol_v4.2
@@ -462,7 +462,7 @@ export default function Home() {
             </div>
           </div>
           <div className="pt-16 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
-            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20">© 2026 SwiftShip Logistics Solutions. Certified Global Standards.</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20">© 2026 Peak Logistics Partners. Certified Global Standards.</p>
             <div className="flex gap-12">
               {['Twitter', 'LinkedIn', 'Instagram'].map(social => (
                 <a key={social} href="#" className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20 hover:text-orange-500 transition-colors">

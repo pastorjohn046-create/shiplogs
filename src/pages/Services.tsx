@@ -40,7 +40,7 @@ export default function Services() {
               <Zap className="w-6 h-6 text-white" />
             </div>
             <span className="text-lg md:text-xl font-black tracking-tighter uppercase text-[#001f3f]">
-              SwiftShip<span className="text-orange-500 hidden sm:inline">Logistics</span><span className="text-orange-500 sm:hidden">Lg.</span>
+              Peak<span className="text-orange-500 hidden sm:inline">Logistics</span><span className="text-orange-500 sm:hidden">Lg.</span>
             </span>
           </div>
           <button 
@@ -137,9 +137,9 @@ export default function Services() {
             <div className="bg-orange-500 p-2 rounded-xl">
               <Zap className="w-6 h-6 text-[#001f3f]" />
             </div>
-            <span className="text-2xl font-black tracking-tighter uppercase">SwiftShip<span className="text-orange-500">Logistics</span></span>
+            <span className="text-2xl font-black tracking-tighter uppercase">Peak<span className="text-orange-500">Logistics</span></span>
           </div>
-          <p className="text-gray-500 text-xs font-black uppercase tracking-widest">© 2026 SwiftShip Logistics. All rights reserved.</p>
+          <p className="text-gray-500 text-xs font-black uppercase tracking-widest">© 2026 Peak Logistics Partners. All rights reserved.</p>
         </div>
       </footer>
     </div>

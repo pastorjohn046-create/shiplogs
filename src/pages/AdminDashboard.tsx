@@ -310,7 +310,7 @@ export default function AdminDashboard() {
           <div className="bg-orange-600 p-1.5 rounded-lg">
             <Zap className="w-5 h-5 text-[#001f3f]" />
           </div>
-          <span className="text-lg font-black tracking-tighter uppercase">SwiftShip<span className="text-orange-500">Logistics</span></span>
+          <span className="text-lg font-black tracking-tighter uppercase">Peak<span className="text-orange-500">Logistics</span></span>
         </div>
         <button 
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -329,7 +329,7 @@ export default function AdminDashboard() {
           <div className="bg-orange-600 p-2 rounded-xl">
             <Zap className="w-6 h-6 text-[#001f3f]" />
           </div>
-          <span className="text-xl font-black tracking-tighter uppercase">SwiftShip<span className="text-orange-500">Logistics</span></span>
+          <span className="text-xl font-black tracking-tighter uppercase">Peak<span className="text-orange-500">Logistics</span></span>
         </div>
         
         <nav className="flex-1 p-6 space-y-2">

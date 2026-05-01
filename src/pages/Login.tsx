@@ -84,7 +84,7 @@ export default function Login() {
             </motion.div>
             
             <h1 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tighter italic text-center leading-none">
-              SWIFT<span className="text-orange-500">ACCESS</span>
+              PEAK<span className="text-orange-500">ACCESS</span>
             </h1>
             
             <div className="flex items-center gap-3 mt-6">
@@ -121,7 +121,7 @@ export default function Login() {
                   type="email" 
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="name@swiftship.global"
+                  placeholder="name@peaklogistics.partners"
                   className="w-full pl-16 pr-8 py-5 bg-[#050505] rounded-2xl outline-none border border-white/10 focus:border-orange-500 font-bold text-white transition-all placeholder:text-white/20 text-sm md:text-base selection:bg-orange-600/30 relative z-10"
                 />
               </div>
@@ -200,7 +200,7 @@ export default function Login() {
         
         <div className="mt-8 flex flex-col items-center gap-4">
           <p className="text-white/[0.05] text-[7px] font-black uppercase tracking-[0.8em]">
-            System.Encrypted / SwiftShip Global Grid
+            System.Encrypted / Peak Logistics Partners Grid
           </p>
           <a 
             href="https://t.me/PeakLogisticsPartners"
