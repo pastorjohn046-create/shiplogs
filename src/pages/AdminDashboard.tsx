@@ -6,6 +6,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { format } from 'date-fns';
 import { useAuth } from '../App';
 
+import { dataService } from '../services/dataService';
+
 export default function AdminDashboard() {
   const [shipments, setShipments] = useState<Shipment[]>([]);
   const [loading, setLoading] = useState(true);
@@ -36,31 +38,16 @@ export default function AdminDashboard() {
     productImage: '',
     weight: '',
     dimensions: '',
+    estimatedDelivery: '',
   });
   const navigate = useNavigate();
 
   const fetchShipments = async () => {
     try {
-      const response = await fetch('/api/shipments', { credentials: 'include' });
-      if (!response.ok) {
-        let errorMsg = `HTTP ${response.status}`;
-        try {
-          const errorData = await response.json();
-          errorMsg += `: ${errorData.error || response.statusText}`;
-        } catch (e) {
-          errorMsg += `: ${response.statusText}`;
-        }
-        throw new Error(errorMsg);
-      }
-      const data = await response.json();
-      if (Array.isArray(data)) {
-        setShipments(data);
-      } else {
-        console.error('Expected array of shipments, got:', data);
-        setShipments([]);
-      }
+      const data = await dataService.getShipments();
+      setShipments(data);
     } catch (error) {
-      console.error('Detailed error fetching shipments:', error);
+      console.error('Error fetching shipments:', error);
       setShipments([]);
     } finally {
       setLoading(false);
@@ -69,26 +56,15 @@ export default function AdminDashboard() {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch('/api/admin/users', { credentials: 'include' });
-      if (response.ok) {
-        const data = await response.json();
-        setUsers(data);
-      }
+      const data = await dataService.getUsers();
+      setUsers(data);
     } catch (error) {
       console.error('Error fetching users:', error);
     }
   };
 
   const fetchLogs = async () => {
-    try {
-      const response = await fetch('/api/admin/logs', { credentials: 'include' });
-      if (response.ok) {
-        const data = await response.json();
-        setLogs(data);
-      }
-    } catch (error) {
-      console.error('Error fetching logs:', error);
-    }
+    setLogs([]);
   };
 
   useEffect(() => {
@@ -99,12 +75,6 @@ export default function AdminDashboard() {
     fetchShipments();
     fetchUsers();
     fetchLogs();
-    const interval = setInterval(() => {
-      fetchShipments();
-      fetchUsers();
-      fetchLogs();
-    }, 30000);
-    return () => clearInterval(interval);
   }, [user, navigate]);
 
   const generateTrackingId = () => {
@@ -116,63 +86,50 @@ export default function AdminDashboard() {
     const trackingId = newShipment.trackingId || generateTrackingId();
     
     try {
-      const response = await fetch('/api/shipments', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...newShipment,
-          trackingId,
-          history: [{
-            status: 'Pending',
-            timestamp: new Date().toISOString(),
-            location: newShipment.origin,
-            description: `Shipment created and ${newShipment.type === 'Flight' ? 'flight' : 'shipment'} scheduled.`,
-          }],
-        }),
-        credentials: 'include'
-      });
-
-      if (response.ok) {
-        setIsModalOpen(false);
-        setNewShipment({ 
-          trackingId: '',
-          type: 'Shipment',
-          customerEmail: '', 
-          userId: '',
-          origin: '', 
-          destination: '', 
+      await dataService.createShipment({
+        ...newShipment,
+        trackingId,
+        history: [{
           status: 'Pending',
-          productName: '',
-          productDescription: '',
-          productImage: '',
-          weight: '',
-          dimensions: '',
-        });
-        fetchShipments();
-      }
+          timestamp: new Date().toISOString(),
+          location: newShipment.origin || 'Base HQ',
+          details: `Shipment created and ${newShipment.type === 'Flight' ? 'flight' : 'shipment'} scheduled.`,
+        }],
+        userId: newShipment.userId || '',
+        status: newShipment.status as any,
+        estimatedDelivery: newShipment.estimatedDelivery || '',
+      } as any);
+
+      setIsModalOpen(false);
+      setNewShipment({ 
+        trackingId: '',
+        type: 'Shipment',
+        customerEmail: '', 
+        userId: '',
+        origin: '', 
+        destination: '', 
+        status: 'Pending',
+        productName: '',
+        productDescription: '',
+        productImage: '',
+        weight: '',
+        dimensions: '',
+        estimatedDelivery: '',
+      });
+      fetchShipments();
     } catch (error) {
       console.error('Error creating shipment:', error);
     }
   };
 
   const handleDeleteShipment = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this shipment? This action cannot be undone.')) return;
+    if (!window.confirm('Are you sure you want to delete this shipment?')) return;
     
     try {
-      const response = await fetch(`/api/shipments/${id}`, {
-        method: 'DELETE',
-        credentials: 'include'
-      });
-      
-      if (response.ok) {
-        fetchShipments();
-      } else {
-        const error = await response.json();
-        alert(error.error || 'Failed to delete shipment');
-      }
+      await dataService.deleteShipment(id);
+      fetchShipments();
     } catch (error) {
       console.error('Error deleting shipment:', error);
-      alert('An error occurred while deleting the shipment');
     }
   };
 
@@ -182,31 +139,24 @@ export default function AdminDashboard() {
     setIsUpdating(true);
 
     try {
-      const response = await fetch(`/api/shipments/${editingShipment.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          status: updateStatus,
-          history: [
-            ...(editingShipment.history || []),
-            {
-              status: updateStatus,
-              timestamp: new Date().toISOString(),
-              location: editingShipment.destination,
-              description: updateDescription || `Shipment status updated to ${updateStatus}`,
-              photoUrl: updatePhoto || undefined,
-            }
-          ]
-        }),
+      await dataService.updateShipment(editingShipment.id, {
+        status: updateStatus as any,
+        history: [
+          ...(editingShipment.history || []),
+          {
+            status: updateStatus,
+            timestamp: new Date().toISOString(),
+            location: editingShipment.destination,
+            details: updateDescription || `Shipment status updated to ${updateStatus}`,
+          }
+        ]
       });
 
-      if (response.ok) {
-        setIsEditModalOpen(false);
-        setUpdateStatus('');
-        setUpdateDescription('');
-        setUpdatePhoto(null);
-        fetchShipments();
-      }
+      setIsEditModalOpen(false);
+      setUpdateStatus('');
+      setUpdateDescription('');
+      setUpdatePhoto(null);
+      fetchShipments();
     } catch (error) {
       console.error('Error updating status:', error);
     } finally {

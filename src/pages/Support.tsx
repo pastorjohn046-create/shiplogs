@@ -6,6 +6,8 @@ import { format } from 'date-fns';
 import { useAuth } from '../App';
 import { motion, AnimatePresence } from 'motion/react';
 
+import { dataService } from '../services/dataService';
+
 export default function Support() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
@@ -35,18 +37,7 @@ export default function Support() {
   const fetchTickets = async () => {
     if (!user) return;
     try {
-      const response = await fetch('/api/tickets', { credentials: 'include' });
-      if (!response.ok) {
-        let errorMsg = `HTTP ${response.status}`;
-        try {
-          const errorData = await response.json();
-          errorMsg += `: ${errorData.error || response.statusText}`;
-        } catch (e) {
-          errorMsg += `: ${response.statusText}`;
-        }
-        throw new Error(errorMsg);
-      }
-      const data = await response.json();
+      const data = await dataService.getTickets();
       setTickets(data);
       if (selectedTicket) {
         const updated = data.find((t: Ticket) => t.id === selectedTicket.id);
@@ -61,8 +52,6 @@ export default function Support() {
 
   useEffect(() => {
     fetchTickets();
-    const interval = setInterval(fetchTickets, 5000);
-    return () => clearInterval(interval);
   }, [user, selectedTicket?.id]);
 
   const handleSendMessage = async (e: React.FormEvent) => {
@@ -70,16 +59,14 @@ export default function Support() {
     if (!selectedTicket || !newMessage.trim() || !user) return;
 
     try {
-      const response = await fetch(`/api/tickets/${selectedTicket.id}/messages`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: newMessage.trim() }),
-        credentials: 'include'
+      const updatedTicket = await dataService.addTicketMessage(selectedTicket.id, {
+        text: newMessage.trim(),
+        sender: 'Customer',
+        timestamp: new Date().toISOString()
       });
-      if (response.ok) {
-        setNewMessage('');
-        fetchTickets();
-      }
+      setNewMessage('');
+      fetchTickets();
+      setSelectedTicket(updatedTicket);
     } catch (error) {
       console.error('Error sending message:', error);
     }
@@ -90,17 +77,19 @@ export default function Support() {
     if (!newTicketText.trim() || !user) return;
 
     try {
-      const response = await fetch('/api/tickets', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: newTicketText.trim() }),
-        credentials: 'include'
+      await dataService.createTicket({
+        customerId: user.uid,
+        status: 'open',
+        createdAt: new Date().toISOString(),
+        messages: [{
+          text: newTicketText.trim(),
+          sender: 'Customer',
+          timestamp: new Date().toISOString()
+        }]
       });
-      if (response.ok) {
-        setIsNewTicketModalOpen(false);
-        setNewTicketText('');
-        fetchTickets();
-      }
+      setIsNewTicketModalOpen(false);
+      setNewTicketText('');
+      fetchTickets();
     } catch (error) {
       console.error('Error creating ticket:', error);
     }

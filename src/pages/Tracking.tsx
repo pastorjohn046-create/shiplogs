@@ -17,6 +17,8 @@ const STATUS_STEPS: ShipmentStatus[] = [
   'Delivered'
 ];
 
+import { dataService } from '../services/dataService';
+
 export default function Tracking() {
   const { trackingId } = useParams<{ trackingId: string }>();
   const { user } = useAuth();
@@ -30,17 +32,8 @@ export default function Tracking() {
   const fetchShipment = async () => {
     if (!trackingId) return;
     try {
-      const response = await fetch(`/api/shipments/${trackingId}`, {
-        credentials: 'include'
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setShipment(data);
-      } else {
-        const errData = await response.json().catch(() => ({}));
-        console.error('Fetch error:', response.status, errData);
-        setShipment(null);
-      }
+      const data = await dataService.getShipmentByTrackingId(trackingId);
+      setShipment(data);
     } catch (error) {
       console.error('Failed to fetch shipment:', error);
       setShipment(null);
@@ -51,9 +44,6 @@ export default function Tracking() {
 
   useEffect(() => {
     fetchShipment();
-    // Poll for updates every 30 seconds
-    const interval = setInterval(fetchShipment, 30000);
-    return () => clearInterval(interval);
   }, [trackingId]);
 
   const handleClaim = async () => {
@@ -67,23 +57,14 @@ export default function Tracking() {
     setClaimSuccess(false);
 
     try {
-      const response = await fetch('/api/shipments/claim', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ trackingId }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setClaimSuccess(true);
-        fetchShipment();
-        setTimeout(() => setClaimSuccess(false), 5000);
-      } else {
-        setClaimError(data.error || 'Failed to claim shipment');
-      }
-    } catch (error) {
-      setClaimError('Network error. Please try again.');
+      if (!shipment) throw new Error('Shipment record lost');
+      await dataService.updateShipment(shipment.id, { userId: user.uid });
+      
+      setClaimSuccess(true);
+      fetchShipment();
+      setTimeout(() => setClaimSuccess(false), 5000);
+    } catch (error: any) {
+      setClaimError(error.message || 'Failed to claim shipment');
     } finally {
       setIsClaiming(false);
     }

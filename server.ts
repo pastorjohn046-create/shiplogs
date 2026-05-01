@@ -1,521 +1,224 @@
 import express from "express";
-import { createServer as createViteServer } from "vite";
 import path from "path";
-import { promises as fs } from "fs";
-import cookieParser from "cookie-parser";
-import jwt from "jsonwebtoken";
-import bcrypt from "bcryptjs";
-import helmet from "helmet";
+import fs from "fs/promises";
+import { createServer as createViteServer } from "vite";
 import compression from "compression";
 import morgan from "morgan";
-import rateLimit from "express-rate-limit";
-import cors from "cors";
-import { z } from "zod";
+import helmet from "helmet";
+import cookieParser from "cookie-parser";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 const PORT = Number(process.env.PORT) || 3000;
-const JWT_SECRET = process.env.JWT_SECRET || "swift-track-secret-key-123";
+const JWT_SECRET = process.env.JWT_SECRET || "peak-logistics-secret-key-2026";
 const DATA_FILE = path.join(process.cwd(), "data.json");
 
-// Initial data structure
-const initialData = {
-  users: [],
-  shipments: [],
-  tickets: [],
-  logs: []
-};
-
-// ... existing code ...
-
-async function addLog(action: string, details: string, user?: any) {
-  try {
-    const data = await getData();
-    const log = {
-      id: Math.random().toString(36).substr(2, 9),
-      timestamp: new Date().toISOString(),
-      action,
-      details,
-      user: user ? user.email : "System"
-    };
-    data.logs = [log, ...(data.logs || [])].slice(0, 100); // Keep last 100 logs
-    await saveData(data);
-  } catch (err) {
-    console.error("Error adding log:", err);
-  }
-}
-
-// Cache for data
-let dataCache: any = null;
-
-async function ensureDataFile() {
-  try {
-    await fs.access(DATA_FILE);
-    const content = await fs.readFile(DATA_FILE, "utf-8");
-    dataCache = JSON.parse(content);
-    
-    // Seed admin if not exists
-    const adminEmail = "pastorjohn046@gmail.com";
-    if (dataCache.users && !dataCache.users.find((u: any) => u.email === adminEmail)) {
-      const hashedPassword = await bcrypt.hash("pastorjohn046@gmail.com", 10);
-      dataCache.users.push({
-        uid: "admin1",
-        email: adminEmail,
-        password: hashedPassword,
-        role: "admin"
-      });
-      await saveData(dataCache);
-      console.log("Admin user seeded.");
-    }
-  } catch {
-    const adminEmail = "pastorjohn046@gmail.com";
-    const hashedPassword = await bcrypt.hash("pastorjohn046@gmail.com", 10);
-    const initialWithAdmin = {
-      ...initialData,
-      users: [{
-        uid: "admin1",
-        email: adminEmail,
-        password: hashedPassword,
-        role: "admin"
-      }]
-    };
-    dataCache = initialWithAdmin;
-    await fs.writeFile(DATA_FILE, JSON.stringify(initialWithAdmin, null, 2));
-    console.log("Initial data and admin user created.");
-  }
-}
-
-async function getData() {
-  if (dataCache) return dataCache;
-  try {
-    const content = await fs.readFile(DATA_FILE, "utf-8");
-    if (!content.trim()) {
-      dataCache = { ...initialData };
-      return dataCache;
-    }
-    dataCache = JSON.parse(content);
-    // Ensure structure
-    if (!dataCache.logs) dataCache.logs = [];
-    if (!dataCache.users) dataCache.users = [];
-    if (!dataCache.shipments) dataCache.shipments = [];
-    if (!dataCache.tickets) dataCache.tickets = [];
-    return dataCache;
-  } catch (err) {
-    console.error("Error reading data file:", err);
-    dataCache = { ...initialData };
-    return dataCache;
-  }
-}
-
-async function saveData(data: any) {
-  const tempFile = `${DATA_FILE}.tmp`;
-  try {
-    dataCache = data;
-    // Atomic-like write: write to temp then rename
-    const content = JSON.stringify(data, null, 2);
-    await fs.writeFile(tempFile, content, "utf-8");
-    await fs.rename(tempFile, DATA_FILE);
-  } catch (err) {
-    console.error("Error saving data file:", err);
-    // Cleanup temp file if it exists
-    try {
-      await fs.unlink(tempFile);
-    } catch {}
-  }
-}
-
-// Validation Schemas
-const registerSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6)
-});
-
-const loginSchema = z.object({
-  email: z.string().email(),
-  password: z.string()
-});
-
-const shipmentSchema = z.object({
-  trackingId: z.string().optional(),
-  type: z.enum(["Flight", "Shipment"]),
-  customerEmail: z.string().email(),
-  userId: z.string().optional(),
-  origin: z.string().min(2),
-  destination: z.string().min(2),
-  status: z.string(),
-  productName: z.string().optional(),
-  productDescription: z.string().optional(),
-  productImage: z.string().optional(),
-  weight: z.string().optional(),
-  dimensions: z.string().optional(),
-  history: z.array(z.object({
-    status: z.string(),
-    timestamp: z.string(),
-    location: z.string().optional(),
-    description: z.string().optional(),
-    photoUrl: z.string().optional()
-  })).optional(),
-  receipts: z.array(z.object({
-    id: z.string(),
-    title: z.string(),
-    amount: z.string(),
-    date: z.string(),
-    fileUrl: z.string().optional(),
-    description: z.string().optional()
-  })).optional()
-});
-
 async function startServer() {
-  await ensureDataFile();
-  
   const app = express();
-  
-  // Trust all proxies
-  app.set('trust proxy', true);
-  
-  // Security Middlewares
-  // Temporarily simplified for debugging
-  app.use(cors({
-    origin: true,
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
-  }));
-  app.use(morgan("dev")); // Logging
-  
-  // Custom API Request Logging
-  app.use("/api", (req, res, next) => {
-    console.log(`[API Request] ${req.method} ${req.originalUrl}`);
-    console.log(`[API Headers] Origin: ${req.headers.origin}, Content-Type: ${req.headers['content-type']}`);
-    next();
-  });
 
-  // Rate Limiting
-  // app.use("/api/", limiter); // Temporarily disabled to rule out proxy IP issues
-  app.get("/api/health", (req, res) => {
-    res.json({ 
-      status: "ok", 
-      env: process.env.NODE_ENV || "development",
-      port: PORT,
-      timestamp: new Date().toISOString() 
-    });
-  });
-
-  app.use(express.json({ limit: "10mb" }));
+  app.use(helmet({ contentSecurityPolicy: false }));
+  app.use(morgan("dev"));
+  app.use(compression());
+  app.use(express.json());
   app.use(cookieParser());
 
-  app.get("/api/debug", async (req, res) => {
-    try {
-      const data = await getData();
-      res.json({
-        nodeEnv: process.env.NODE_ENV,
-        port: PORT,
-        cwd: process.cwd(),
-        dataFile: DATA_FILE,
-        userCount: data.users?.length || 0,
-        bcryptWorking: typeof bcrypt.hash === 'function',
-        timestamp: new Date().toISOString()
-      });
-    } catch (err: any) {
-      res.status(500).json({ error: err.message });
-    }
-  });
-
-  // Auth Middleware
-  const authenticate = (req: any, res: any, next: any) => {
-    const token = req.cookies.token;
-    if (!token) return res.status(401).json({ error: "Unauthorized" });
-    try {
-      const decoded = jwt.verify(token, JWT_SECRET) as any;
-      req.user = decoded;
-      next();
-    } catch (err) {
-      res.status(401).json({ error: "Invalid token" });
-    }
+  // Data Management
+  const initialData = {
+    users: [
+      {
+        uid: "admin1",
+        email: "pastorjohn046@gmail.com",
+        password: await bcrypt.hash("password123", 10),
+        role: "admin",
+        name: "Central Admin"
+      }
+    ],
+    shipments: [],
+    tickets: []
   };
 
-  const isAdmin = (req: any, res: any, next: any) => {
-    if (req.user?.role !== "admin" || req.user?.email !== "pastorjohn046@gmail.com") {
-      return res.status(403).json({ error: "Forbidden: Admin access restricted" });
+  async function getData() {
+    try {
+      const content = await fs.readFile(DATA_FILE, "utf-8");
+      return JSON.parse(content);
+    } catch {
+      await fs.writeFile(DATA_FILE, JSON.stringify(initialData, null, 2));
+      return initialData;
     }
-    next();
-  };
+  }
+
+  async function saveData(data: any) {
+    await fs.writeFile(DATA_FILE, JSON.stringify(data, null, 2));
+  }
 
   // Auth Routes
   app.post("/api/auth/register", async (req, res) => {
-    console.log(`[Auth] Registering user: ${req.body?.email}`);
-    try {
-      if (!req.body) throw new Error("Missing request body");
-      const { email, password } = registerSchema.parse(req.body);
-      const data = await getData();
-      if (!data.users) data.users = [];
-      
-      if (data.users.find((u: any) => u.email === email)) {
-        console.warn(`[Auth] Registration failed: User ${email} already exists`);
-        return res.status(400).json({ error: "User already exists" });
-      }
-      
-      const hashedPassword = await bcrypt.hash(password, 10);
-      const newUser = {
-        uid: Math.random().toString(36).substr(2, 9),
-        email,
-        password: hashedPassword,
-        role: email === "pastorjohn046@gmail.com" ? "admin" : "customer"
-      };
-      data.users.push(newUser);
-      await saveData(data);
-      
-      await addLog("User Registration", `New user registered: ${email}`, { email });
-
-      const token = jwt.sign({ uid: newUser.uid, email: newUser.email, role: newUser.role }, JWT_SECRET, { expiresIn: "30d" });
-      res.cookie("token", token, { 
-        httpOnly: true, 
-        secure: false, // Explicitly false for troubleshooting Railway proxy issues
-        sameSite: "lax",
-        maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
-      });
-      console.log(`[Auth] Registered: ${email}`);
-      return res.status(201).json({ uid: newUser.uid, email: newUser.email, role: newUser.role });
-    } catch (err: any) {
-      console.error("Registration error:", err);
-      return res.status(400).json({ error: err.message || "Registration failed" });
+    const { email, password, name } = req.body;
+    const data = await getData();
+    if (data.users.find((u: any) => u.email === email)) {
+      return res.status(400).json({ error: "User already exists" });
     }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = {
+      uid: Math.random().toString(36).substring(7),
+      email,
+      password: hashedPassword,
+      name: name || "User",
+      role: "user"
+    };
+    data.users.push(newUser);
+    await saveData(data);
+    
+    const token = jwt.sign({ uid: newUser.uid, role: newUser.role }, JWT_SECRET);
+    res.cookie("token", token, { httpOnly: true, maxAge: 30 * 24 * 60 * 60 * 1000 });
+    res.json({ uid: newUser.uid, email: newUser.email, role: newUser.role, name: newUser.name });
   });
 
   app.post("/api/auth/login", async (req, res) => {
-    console.log(`[Auth] Login attempt: ${req.body?.email}`);
-    try {
-      if (!req.body) throw new Error("Missing request body");
-      const { email, password } = loginSchema.parse(req.body);
-      const data = await getData();
-      if (!data.users) data.users = [];
-      
-      const user = data.users.find((u: any) => u.email === email);
-      if (!user) {
-        console.warn(`[Auth] Login failed: User ${email} not found`);
-        return res.status(401).json({ error: "Invalid credentials" });
-      }
-
-      const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch) {
-        console.warn(`[Auth] Login failed: Incorrect password for ${email}`);
-        return res.status(401).json({ error: "Invalid credentials" });
-      }
-
-      const token = jwt.sign({ uid: user.uid, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: "30d" });
-      res.cookie("token", token, { 
-        httpOnly: true, 
-        secure: false, // Explicitly false for troubleshooting Railway proxy issues
-        sameSite: "lax",
-        maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
-      });
-      await addLog("User Login", `User logged in: ${email}`, { email });
-      console.log(`[Auth] Logged in: ${email}`);
-      return res.json({ uid: user.uid, email: user.email, role: user.role });
-    } catch (err: any) {
-      console.error("Login error:", err);
-      return res.status(400).json({ error: err.message || "Login failed" });
+    const { email, password } = req.body;
+    const data = await getData();
+    const user = data.users.find((u: any) => u.email === email);
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      return res.status(401).json({ error: "Invalid credentials" });
     }
+    const token = jwt.sign({ uid: user.uid, role: user.role }, JWT_SECRET);
+    res.cookie("token", token, { httpOnly: true, maxAge: 30 * 24 * 60 * 60 * 1000 });
+    res.json({ uid: user.uid, email: user.email, role: user.role, name: user.name });
   });
 
   app.post("/api/auth/logout", (req, res) => {
     res.clearCookie("token");
-    res.json({ success: true });
+    res.json({ status: "ok" });
   });
 
-  app.get("/api/auth/me", (req: any, res) => {
+  app.get("/api/auth/me", async (req, res) => {
     const token = req.cookies.token;
-    if (!token) return res.json(null);
+    if (!token) return res.status(401).json({ error: "Not logged in" });
     try {
-      const decoded = jwt.verify(token, JWT_SECRET);
-      res.json(decoded);
-    } catch (err) {
-      res.json(null);
-    }
-  });
-
-  app.get("/api/admin/users", authenticate, isAdmin, async (req: any, res) => {
-    try {
+      const decoded = jwt.verify(token, JWT_SECRET) as any;
       const data = await getData();
-      res.json(data.users.map((u: any) => ({ uid: u.uid, email: u.email, role: u.role })));
-    } catch (err) {
-      res.status(500).json({ error: "Failed to fetch users" });
-    }
-  });
-
-  app.get("/api/admin/logs", authenticate, isAdmin, async (req: any, res) => {
-    try {
-      const data = await getData();
-      res.json(data.logs || []);
-    } catch (err) {
-      res.status(500).json({ error: "Failed to fetch logs" });
+      const user = data.users.find((u: any) => u.uid === decoded.uid);
+      if (!user) return res.status(401).json({ error: "User not found" });
+      res.json({ uid: user.uid, email: user.email, role: user.role, name: user.name });
+    } catch {
+      res.status(401).json({ error: "Invalid token" });
     }
   });
 
   // Shipment Routes
-  app.get("/api/shipments", authenticate, async (req: any, res) => {
+  app.get("/api/shipments", async (req, res) => {
+    const token = req.cookies.token;
+    if (!token) return res.status(401).json({ error: "Unauthorized" });
+    const decoded = jwt.verify(token, JWT_SECRET) as any;
     const data = await getData();
-    if (req.user.role === "admin") {
+    
+    if (decoded.role === "admin") {
       res.json(data.shipments);
     } else {
-      res.json(data.shipments.filter((s: any) => s.userId === req.user.uid || s.customerEmail === req.user.email));
+      res.json(data.shipments.filter((s: any) => s.userId === decoded.uid));
     }
   });
 
-  app.post("/api/shipments/claim", authenticate, async (req: any, res) => {
-    const { trackingId } = req.body;
-    if (!trackingId) return res.status(400).json({ error: "Tracking ID is required" });
-    
+  app.get("/api/shipments/:trackingId", async (req, res) => {
     const data = await getData();
-    const shipment = data.shipments.find((s: any) => s.trackingId === trackingId);
-    
+    const shipment = data.shipments.find((s: any) => s.trackingId === req.params.trackingId);
     if (!shipment) return res.status(404).json({ error: "Shipment not found" });
-    
-    // Update shipment with current user's UID
-    shipment.userId = req.user.uid;
-    shipment.customerEmail = req.user.email; // Also update email to match current user
-    shipment.updatedAt = new Date().toISOString();
-    
-    await saveData(data);
-    res.json({ success: true, shipment });
-  });
-
-  app.get("/api/shipments/:id", async (req, res) => {
-    const data = await getData();
-    const shipment = data.shipments.find((s: any) => s.trackingId === req.params.id || s.id === req.params.id);
-    if (!shipment) return res.status(404).json({ error: "Not found" });
     res.json(shipment);
   });
 
-  app.post("/api/shipments", authenticate, isAdmin, async (req: any, res) => {
-    try {
-      const validatedData = shipmentSchema.parse(req.body);
-      const data = await getData();
-      const newShipment = {
-        ...validatedData,
-        id: Math.random().toString(36).substr(2, 9),
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      };
-      data.shipments.push(newShipment);
-      await saveData(data);
-      await addLog("Shipment Created", `Created shipment: ${newShipment.trackingId}`, req.user);
-      res.json(newShipment);
-    } catch (err: any) {
-      res.status(400).json({ error: err.errors?.[0]?.message || "Invalid input" });
-    }
+  app.post("/api/shipments", async (req, res) => {
+    const data = await getData();
+    const newShipment = {
+      ...req.body,
+      id: Math.random().toString(36).substring(7),
+      createdAt: new Date().toISOString()
+    };
+    data.shipments.push(newShipment);
+    await saveData(data);
+    res.json(newShipment);
   });
 
-  app.patch("/api/shipments/:id", authenticate, isAdmin, async (req: any, res) => {
+  app.patch("/api/shipments/:id", async (req, res) => {
     const data = await getData();
     const index = data.shipments.findIndex((s: any) => s.id === req.params.id);
     if (index === -1) return res.status(404).json({ error: "Not found" });
-    
-    const oldStatus = data.shipments[index].status;
-    data.shipments[index] = {
-      ...data.shipments[index],
-      ...req.body,
-      updatedAt: new Date().toISOString()
-    };
+    data.shipments[index] = { ...data.shipments[index], ...req.body };
     await saveData(data);
-    
-    if (req.body.status && req.body.status !== oldStatus) {
-      await addLog("Shipment Updated", `Updated status to ${req.body.status} for shipment ${data.shipments[index].trackingId}`, req.user);
-    }
-    
     res.json(data.shipments[index]);
   });
-  
-  app.delete("/api/shipments/:id", authenticate, isAdmin, async (req: any, res) => {
+
+  app.delete("/api/shipments/:id", async (req, res) => {
     const data = await getData();
-    const index = data.shipments.findIndex((s: any) => s.id === req.params.id);
-    if (index === -1) return res.status(404).json({ error: "Not found" });
-    
-    const trackingId = data.shipments[index].trackingId;
-    data.shipments.splice(index, 1);
+    data.shipments = data.shipments.filter((s: any) => s.id !== req.params.id);
     await saveData(data);
-    await addLog("Shipment Deleted", `Deleted shipment: ${trackingId}`, req.user);
-    res.json({ success: true });
+    res.json({ status: "ok" });
   });
 
   // Ticket Routes
-  app.get("/api/tickets", authenticate, async (req: any, res) => {
-    const data = await getData();
-    if (req.user.role === "admin") {
-      res.json(data.tickets);
-    } else {
-      res.json(data.tickets.filter((t: any) => t.customerId === req.user.uid));
+  app.get("/api/tickets", async (req, res) => {
+    const token = req.cookies.token;
+    if (!token) return res.status(401).json({ error: "Unauthorized" });
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET) as any;
+      const data = await getData();
+      if (decoded.role === "admin") {
+        res.json(data.tickets);
+      } else {
+        res.json(data.tickets.filter((t: any) => t.customerId === decoded.uid));
+      }
+    } catch {
+      res.status(401).json({ error: "Invalid token" });
     }
   });
 
-  app.post("/api/tickets", authenticate, async (req: any, res) => {
-    const data = await getData();
-    const { text } = req.body;
-    if (!text) return res.status(400).json({ error: "Message is required" });
-    
-    const newTicket = {
-      id: Math.random().toString(36).substr(2, 9),
-      customerId: req.user.uid,
-      customerEmail: req.user.email,
-      status: "open",
-      createdAt: new Date().toISOString(),
-      messages: [{
-        sender: "Customer",
-        text,
-        timestamp: new Date().toISOString()
-      }]
-    };
-    data.tickets.push(newTicket);
-    await saveData(data);
-    await addLog("Ticket Created", `New ticket created by ${req.user.email}`, req.user);
-    res.json(newTicket);
-  });
-
-  app.post("/api/tickets/:id/messages", authenticate, async (req: any, res) => {
-    const data = await getData();
-    const ticket = data.tickets.find((t: any) => t.id === req.params.id);
-    if (!ticket) return res.status(404).json({ error: "Not found" });
-    
-    // Check permission
-    if (req.user.role !== "admin" && ticket.customerId !== req.user.uid) {
-      return res.status(403).json({ error: "Forbidden" });
+  app.post("/api/tickets", async (req, res) => {
+    const token = req.cookies.token;
+    if (!token) return res.status(401).json({ error: "Unauthorized" });
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET) as any;
+      const data = await getData();
+      const newTicket = {
+        ...req.body,
+        id: Math.random().toString(36).substring(7),
+        customerId: decoded.uid,
+        status: "open",
+        createdAt: new Date().toISOString(),
+        messages: req.body.messages || []
+      };
+      data.tickets.push(newTicket);
+      await saveData(data);
+      res.json(newTicket);
+    } catch {
+      res.status(401).json({ error: "Invalid token" });
     }
-
-    const { text } = req.body;
-    if (!text) return res.status(400).json({ error: "Message is required" });
-    
-    ticket.messages.push({
-      sender: req.user.role === "admin" ? "Admin" : "Customer",
-      text,
-      timestamp: new Date().toISOString()
-    });
-    ticket.status = "open"; // Re-open or keep open on new message
-    await saveData(data);
-    res.json(ticket);
   });
 
-  app.patch("/api/tickets/:id", authenticate, isAdmin, async (req: any, res) => {
+  app.post("/api/tickets/:id/messages", async (req, res) => {
     const data = await getData();
     const index = data.tickets.findIndex((t: any) => t.id === req.params.id);
     if (index === -1) return res.status(404).json({ error: "Not found" });
-    data.tickets[index] = {
-      ...data.tickets[index],
-      ...req.body
-    };
+    if (!data.tickets[index].messages) data.tickets[index].messages = [];
+    data.tickets[index].messages.push(req.body);
     await saveData(data);
     res.json(data.tickets[index]);
   });
 
-  app.all("/api/*", (req, res) => {
-    res.status(404).json({ error: `API route not found: ${req.method} ${req.path}` });
+  app.patch("/api/tickets/:id", async (req, res) => {
+    const data = await getData();
+    const index = data.tickets.findIndex((t: any) => t.id === req.params.id);
+    if (index === -1) return res.status(404).json({ error: "Not found" });
+    data.tickets[index].status = req.body.status;
+    await saveData(data);
+    res.json(data.tickets[index]);
   });
 
-  // Error handling middleware
-  app.use((err: any, req: any, res: any, next: any) => {
-    console.error("Server Error:", err);
-    if (!res.headersSent) {
-      res.status(500).json({ error: "Internal Server Error" });
-    }
+  // Admin Routes
+  app.get("/api/admin/users", async (req, res) => {
+    const data = await getData();
+    res.json(data.users.map(({ password, ...u }: any) => u));
   });
 
-  // Vite middleware for development
+  // Vite middleware
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
       server: { middlewareMode: true },
@@ -531,7 +234,7 @@ async function startServer() {
   }
 
   app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`[Peak Logistics] Server running on http://localhost:${PORT}`);
   });
 }
 

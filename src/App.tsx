@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { UserProfile } from './types';
 import { MessageCircle, X, Send, ExternalLink } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { dataService } from './services/dataService';
 
 // Pages
 import Home from './pages/Home';
@@ -28,7 +29,7 @@ interface AuthContextType {
   loading: boolean;
   isAdmin: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string) => Promise<void>;
+  register: (email: string, password: string, name: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -50,7 +51,7 @@ export default function App() {
   const [isChatOpen, setIsChatOpen] = useState(false);
 
   useEffect(() => {
-    fetch('/api/auth/me', { credentials: 'include' })
+    fetch('/api/auth/me')
       .then(res => {
         if (!res.ok) throw new Error('Not authenticated');
         return res.json();
@@ -70,60 +71,35 @@ export default function App() {
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-        credentials: 'include'
+        body: JSON.stringify({ email, password })
       });
-      
-      const contentType = res.headers.get('content-type');
-      let data;
-      if (contentType && contentType.includes('application/json')) {
-        data = await res.json();
-      } else {
-        const text = await res.text();
-        console.error('Login: Invalid server response text:', text);
-        throw new Error(`Invalid response (Status ${res.status}): ${text.substring(0, 150)}`);
-      }
-
-      if (!res.ok) throw new Error(data.error || `Login failed (Status ${res.status})`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Login failed');
       setUser(data);
     } catch (err: any) {
       console.error('Login error:', err);
-      throw new Error(err.message || 'Login failed unexpectedly');
+      throw new Error(err.message || 'Login failed');
     }
   };
 
-  const register = async (email: string, password: string) => {
+  const register = async (email: string, password: string, name: string = 'User') => {
     try {
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-        credentials: 'include'
+        body: JSON.stringify({ email, password, name })
       });
-
-      const contentType = res.headers.get('content-type');
-      let data;
-      if (contentType && contentType.includes('application/json')) {
-        data = await res.json();
-      } else {
-        const text = await res.text();
-        console.error('Register: Invalid server response text:', text);
-        throw new Error(`Invalid response (Status ${res.status}): ${text.substring(0, 150)}`);
-      }
-
-      if (!res.ok) throw new Error(data.error || `Registration failed (Status ${res.status})`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Registration failed');
       setUser(data);
     } catch (err: any) {
       console.error('Registration error:', err);
-      throw new Error(err.message || 'Registration failed unexpectedly');
+      throw new Error(err.message || 'Registration failed');
     }
   };
 
   const logout = async () => {
-    await fetch('/api/auth/logout', { 
-      method: 'POST',
-      credentials: 'include'
-    });
+    await fetch('/api/auth/logout', { method: 'POST' });
     setUser(null);
   };
 

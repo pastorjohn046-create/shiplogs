@@ -6,6 +6,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { motion } from 'motion/react';
 
+import { dataService } from '../services/dataService';
+
 export default function Dashboard() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -20,17 +22,10 @@ export default function Dashboard() {
     if (!user) return;
     setLoading(true);
     try {
-      const res = await fetch('/api/shipments', { credentials: 'include' });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      if (Array.isArray(data)) {
-        setShipments(data);
-      } else {
-        console.error('Expected array of shipments, got:', data);
-        setShipments([]);
-      }
+      const data = await dataService.getShipments();
+      setShipments(data);
     } catch (err) {
-      console.error('Detailed error fetching shipments:', err);
+      console.error('Error fetching shipments:', err);
       setShipments([]);
     } finally {
       setLoading(false);
@@ -43,32 +38,26 @@ export default function Dashboard() {
 
   const handleClaimShipment = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!claimTrackingId.trim()) return;
+    const tid = claimTrackingId.trim();
+    if (!tid) return;
 
     setIsClaiming(true);
     setClaimError('');
     setClaimSuccess(false);
 
     try {
-      const response = await fetch('/api/shipments/claim', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ trackingId: claimTrackingId.trim() }),
-        credentials: 'include'
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setClaimSuccess(true);
-        setClaimTrackingId('');
-        fetchShipments();
-        setTimeout(() => setClaimSuccess(false), 5000);
-      } else {
-        setClaimError(data.error || 'Failed to claim shipment');
-      }
-    } catch (error) {
-      setClaimError('Network error. Please try again.');
+      const shipment = await dataService.getShipmentByTrackingId(tid);
+      if (!shipment) throw new Error('Shipment not found');
+      if (shipment.userId === user.uid) throw new Error('Already in your console');
+      
+      await dataService.updateShipment(shipment.id, { userId: user.uid });
+      
+      setClaimSuccess(true);
+      setClaimTrackingId('');
+      fetchShipments();
+      setTimeout(() => setClaimSuccess(false), 5000);
+    } catch (error: any) {
+      setClaimError(error.message || 'Failed to claim shipment');
     } finally {
       setIsClaiming(false);
     }

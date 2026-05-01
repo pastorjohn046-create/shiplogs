@@ -5,6 +5,8 @@ import { MessageSquare, ArrowLeft, Send, CheckCircle2, User, LayoutDashboard, Lo
 import { format } from 'date-fns';
 import { useAuth } from '../App';
 
+import { dataService } from '../services/dataService';
+
 export default function AdminTickets() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
@@ -27,18 +29,7 @@ export default function AdminTickets() {
 
   const fetchTickets = async () => {
     try {
-      const response = await fetch('/api/tickets', { credentials: 'include' });
-      if (!response.ok) {
-        let errorMsg = `HTTP ${response.status}`;
-        try {
-          const errorData = await response.json();
-          errorMsg += `: ${errorData.error || response.statusText}`;
-        } catch (e) {
-          errorMsg += `: ${response.statusText}`;
-        }
-        throw new Error(errorMsg);
-      }
-      const data = await response.json();
+      const data = await dataService.getTickets();
       setTickets(data);
       if (selectedTicket) {
         const updated = data.find((t: Ticket) => t.id === selectedTicket.id);
@@ -53,8 +44,6 @@ export default function AdminTickets() {
 
   useEffect(() => {
     fetchTickets();
-    const interval = setInterval(fetchTickets, 5000);
-    return () => clearInterval(interval);
   }, [selectedTicket?.id]);
 
   const handleSendReply = async (e: React.FormEvent) => {
@@ -62,16 +51,14 @@ export default function AdminTickets() {
     if (!selectedTicket || !reply.trim()) return;
 
     try {
-      const response = await fetch(`/api/tickets/${selectedTicket.id}/messages`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: reply.trim() }),
-        credentials: 'include'
+      const updatedTicket = await dataService.addTicketMessage(selectedTicket.id, {
+        text: reply.trim(),
+        sender: 'Admin',
+        timestamp: new Date().toISOString()
       });
-      if (response.ok) {
-        setReply('');
-        fetchTickets();
-      }
+      setReply('');
+      fetchTickets();
+      setSelectedTicket(updatedTicket);
     } catch (error) {
       console.error('Error sending reply:', error);
     }
@@ -79,15 +66,8 @@ export default function AdminTickets() {
 
   const handleCloseTicket = async (ticketId: string) => {
     try {
-      const response = await fetch(`/api/tickets/${ticketId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'closed' }),
-        credentials: 'include'
-      });
-      if (response.ok) {
-        fetchTickets();
-      }
+      await dataService.updateTicketStatus(ticketId, 'closed');
+      fetchTickets();
     } catch (error) {
       console.error('Error closing ticket:', error);
     }
