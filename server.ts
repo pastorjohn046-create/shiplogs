@@ -64,7 +64,7 @@ async function startServer() {
       email,
       password: hashedPassword,
       name: name || "User",
-      role: "user"
+      role: "customer"
     };
     data.users.push(newUser);
     await saveData(data);
@@ -131,7 +131,8 @@ async function startServer() {
     const newShipment = {
       ...req.body,
       id: Math.random().toString(36).substring(7),
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     };
     data.shipments.push(newShipment);
     await saveData(data);
@@ -142,7 +143,11 @@ async function startServer() {
     const data = await getData();
     const index = data.shipments.findIndex((s: any) => s.id === req.params.id);
     if (index === -1) return res.status(404).json({ error: "Not found" });
-    data.shipments[index] = { ...data.shipments[index], ...req.body };
+    data.shipments[index] = { 
+      ...data.shipments[index], 
+      ...req.body,
+      updatedAt: new Date().toISOString()
+    };
     await saveData(data);
     res.json(data.shipments[index]);
   });
@@ -177,10 +182,12 @@ async function startServer() {
     try {
       const decoded = jwt.verify(token, JWT_SECRET) as any;
       const data = await getData();
+      const user = data.users.find((u: any) => u.uid === decoded.uid);
       const newTicket = {
         ...req.body,
         id: Math.random().toString(36).substring(7),
         customerId: decoded.uid,
+        customerEmail: user?.email,
         status: "open",
         createdAt: new Date().toISOString(),
         messages: req.body.messages || []

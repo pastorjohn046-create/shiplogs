@@ -93,7 +93,7 @@ export default function AdminDashboard() {
           status: 'Pending',
           timestamp: new Date().toISOString(),
           location: newShipment.origin || 'Base HQ',
-          details: `Shipment created and ${newShipment.type === 'Flight' ? 'flight' : 'shipment'} scheduled.`,
+          description: `Shipment created and ${newShipment.type === 'Flight' ? 'flight' : 'shipment'} scheduled.`,
         }],
         userId: newShipment.userId || '',
         status: newShipment.status as any,
@@ -147,7 +147,7 @@ export default function AdminDashboard() {
             status: updateStatus,
             timestamp: new Date().toISOString(),
             location: editingShipment.destination,
-            details: updateDescription || `Shipment status updated to ${updateStatus}`,
+            description: updateDescription || `Shipment status updated to ${updateStatus}`,
           }
         ]
       });
@@ -186,23 +186,17 @@ export default function AdminDashboard() {
     };
 
     try {
-      const response = await fetch(`/api/shipments/${editingShipment.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          receipts: [...(editingShipment.receipts || []), receipt]
-        }),
+      await dataService.updateShipment(editingShipment.id, {
+        receipts: [...(editingShipment.receipts || []), receipt]
       });
 
-      if (response.ok) {
-        const updatedShipment = {
-          ...editingShipment,
-          receipts: [...(editingShipment.receipts || []), receipt]
-        };
-        setEditingShipment(updatedShipment);
-        setNewReceipt({ title: '', amount: '', description: '' });
-        fetchShipments();
-      }
+      const updatedShipment = {
+        ...editingShipment,
+        receipts: [...(editingShipment.receipts || []), receipt]
+      };
+      setEditingShipment(updatedShipment);
+      setNewReceipt({ title: '', amount: '', description: '' });
+      fetchShipments();
     } catch (error) {
       console.error('Error adding receipt:', error);
     }
@@ -213,19 +207,14 @@ export default function AdminDashboard() {
     const updatedReceipts = (editingShipment.receipts || []).filter(r => r.id !== receiptId);
     
     try {
-      const response = await fetch(`/api/shipments/${editingShipment.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ receipts: updatedReceipts }),
-      });
-      if (response.ok) {
-        const updatedShipment = {
-          ...editingShipment,
-          receipts: updatedReceipts
-        };
-        setEditingShipment(updatedShipment);
-        fetchShipments();
-      }
+      await dataService.updateShipment(editingShipment.id, { receipts: updatedReceipts });
+      
+      const updatedShipment = {
+        ...editingShipment,
+        receipts: updatedReceipts
+      };
+      setEditingShipment(updatedShipment);
+      fetchShipments();
     } catch (error) {
       console.error('Error deleting receipt:', error);
     }
