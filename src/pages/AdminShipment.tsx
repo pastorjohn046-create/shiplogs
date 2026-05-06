@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Shipment, ShipmentStatus, ShipmentHistory } from '../types';
-import { Truck, Package, MapPin, Clock, ArrowLeft, Camera, Send, CheckCircle2, AlertCircle, Loader2, FileText, Plus, Trash2 } from 'lucide-react';
+import { Truck, Package, MapPin, Clock, ArrowLeft, Camera, Send, CheckCircle2, AlertCircle, Loader2, FileText, Plus, Trash2, Plane, ArrowRight } from 'lucide-react';
 import { motion } from 'motion/react';
 import { format } from 'date-fns';
 
@@ -250,8 +250,127 @@ export default function AdminShipment() {
                   className="w-full px-8 py-6 bg-slate-50 rounded-3xl outline-none focus:ring-4 ring-orange-600/10 font-black text-[#001f3f] border border-slate-100 focus:border-orange-600/20 transition-all uppercase tracking-widest placeholder:text-slate-200"
                 />
               </div>
+
+              {shipment.type === 'Flight' && (
+                <>
+                  <div className="space-y-4">
+                    <label className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 ml-2">Flight Number</label>
+                    <input 
+                      type="text" 
+                      value={shipment.flightNumber || ''}
+                      onChange={(e) => setShipment({...shipment, flightNumber: e.target.value})}
+                      onBlur={(e) => handleMetaUpdate({ flightNumber: e.target.value })}
+                      placeholder="FLIGHT NUMBER"
+                      className="w-full px-8 py-6 bg-slate-50 rounded-3xl outline-none focus:ring-4 ring-orange-600/10 font-black text-[#001f3f] border border-slate-100 focus:border-orange-600/20 transition-all uppercase tracking-widest"
+                    />
+                  </div>
+                  <div className="space-y-4">
+                    <label className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 ml-2">Airline</label>
+                    <input 
+                      type="text" 
+                      value={shipment.airline || ''}
+                      onChange={(e) => setShipment({...shipment, airline: e.target.value})}
+                      onBlur={(e) => handleMetaUpdate({ airline: e.target.value })}
+                      placeholder="AIRLINE"
+                      className="w-full px-8 py-6 bg-slate-50 rounded-3xl outline-none focus:ring-4 ring-orange-600/10 font-black text-[#001f3f] border border-slate-100 focus:border-orange-600/20 transition-all uppercase tracking-widest"
+                    />
+                  </div>
+                  <div className="space-y-4">
+                    <label className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 ml-2">Departure Time</label>
+                    <input 
+                      type="text" 
+                      value={shipment.departureTime || ''}
+                      onChange={(e) => setShipment({...shipment, departureTime: e.target.value})}
+                      onBlur={(e) => handleMetaUpdate({ departureTime: e.target.value })}
+                      placeholder="DEPARTURE TIME"
+                      className="w-full px-8 py-6 bg-slate-50 rounded-3xl outline-none focus:ring-4 ring-orange-600/10 font-black text-[#001f3f] border border-slate-100 focus:border-orange-600/20 transition-all uppercase tracking-widest"
+                    />
+                  </div>
+                  <div className="space-y-4">
+                    <label className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-300 ml-2">Arrival Time (ETA)</label>
+                    <input 
+                      type="text" 
+                      value={shipment.arrivalTime || ''}
+                      onChange={(e) => setShipment({...shipment, arrivalTime: e.target.value})}
+                      onBlur={(e) => handleMetaUpdate({ arrivalTime: e.target.value })}
+                      placeholder="ARRIVAL TIME"
+                      className="w-full px-8 py-6 bg-slate-50 rounded-3xl outline-none focus:ring-4 ring-orange-600/10 font-black text-[#001f3f] border border-slate-100 focus:border-orange-600/20 transition-all uppercase tracking-widest"
+                    />
+                  </div>
+                </>
+              )}
             </div>
           </div>
+
+          {shipment.type === 'Flight' && (
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="nexus-card rounded-[3.5rem] border-slate-200 overflow-hidden"
+            >
+              <div className="bg-[#001f3f] px-8 md:px-14 py-8 md:py-10 flex justify-between items-center relative overflow-hidden">
+                 <div className="absolute top-0 right-0 w-64 h-64 bg-orange-600/5 rounded-full -mr-32 -mt-32 blur-3xl opacity-50" />
+                 <div className="flex items-center gap-6 z-10">
+                    <div className="p-4 bg-orange-600 rounded-2xl shadow-xl">
+                      <Plane className="w-8 h-8 text-[#001f3f]" />
+                    </div>
+                    <div>
+                      <span className="text-[9px] font-black text-orange-400 uppercase tracking-widest block mb-1">Boarding Pass Preview</span>
+                      <h2 className="text-xl md:text-3xl font-black text-white tracking-tighter italic uppercase">{shipment.trackingId}</h2>
+                    </div>
+                 </div>
+                 <div className="hidden md:flex items-center gap-4 z-10">
+                    <div className="w-16 h-1 bg-white/10 rounded-full" />
+                    <span className="text-white/20 text-[8px] font-black uppercase tracking-widest">Air Ops Manifest</span>
+                 </div>
+              </div>
+
+              <div className="p-8 md:p-14 relative bg-white">
+                 <div className="absolute top-0 left-0 w-full h-8 flex items-center justify-between pointer-events-none px-4 -mt-4">
+                    <div className="w-8 h-8 bg-gray-50 rounded-full -ml-8 border-r border-slate-100" />
+                    <div className="flex-1 border-t-2 border-dashed border-slate-100 mx-2" />
+                    <div className="w-8 h-8 bg-gray-50 rounded-full -mr-8 border-l border-slate-100" />
+                 </div>
+
+                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div>
+                      <span className="text-[7px] md:text-[8px] font-black text-slate-300 uppercase tracking-widest block mb-1">Carrier</span>
+                      <p className="text-sm font-black text-[#001f3f] uppercase italic">{shipment.airline || 'NOT ASSIGNED'}</p>
+                    </div>
+                    <div>
+                      <span className="text-[7px] md:text-[8px] font-black text-slate-300 uppercase tracking-widest block mb-1">Flight No.</span>
+                      <p className="text-sm font-black text-[#001f3f] uppercase italic">{shipment.flightNumber || 'TBD'}</p>
+                    </div>
+                    <div>
+                      <span className="text-[7px] md:text-[8px] font-black text-slate-300 uppercase tracking-widest block mb-1">Origin</span>
+                      <p className="text-sm font-black text-[#001f3f] uppercase italic">{shipment.origin}</p>
+                    </div>
+                    <div>
+                      <span className="text-[7px] md:text-[8px] font-black text-slate-300 uppercase tracking-widest block mb-1">Target</span>
+                      <p className="text-sm font-black text-[#001f3f] uppercase italic">{shipment.destination}</p>
+                    </div>
+                 </div>
+
+                 <div className="mt-10 pt-10 border-t border-slate-50 flex flex-col md:flex-row justify-between items-center gap-8">
+                    <div className="flex items-center gap-8">
+                       <div className="text-center">
+                          <span className="text-[7px] font-black text-slate-300 uppercase tracking-widest block mb-2">ETD</span>
+                          <p className="text-xl font-black text-[#001f3f] italic uppercase">{shipment.departureTime || '--:--'}</p>
+                       </div>
+                       <ArrowRight className="text-slate-200" />
+                       <div className="text-center">
+                          <span className="text-[7px] font-black text-slate-300 uppercase tracking-widest block mb-2">ETA</span>
+                          <p className="text-xl font-black text-orange-600 italic uppercase">{shipment.arrivalTime || '--:--'}</p>
+                       </div>
+                    </div>
+                    <div className="bg-slate-50 p-4 rounded-2xl flex items-center gap-4">
+                       <div className="w-10 h-10 bg-[url('https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=id')] bg-contain opacity-40" style={{backgroundImage: `url('https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${shipment.trackingId}')`}} />
+                       <div className="text-[7px] font-mono font-bold text-slate-400 uppercase leading-tight">Verified <br /> Tactical <br /> Scan</div>
+                    </div>
+                 </div>
+              </div>
+            </motion.div>
+          )}
 
           <div className="nexus-card rounded-[3.5rem] border-slate-200 p-8 md:p-14 relative overflow-hidden">
             <h2 className="text-3xl font-black text-[#001f3f] mb-12 flex items-center gap-6 uppercase tracking-tighter italic">

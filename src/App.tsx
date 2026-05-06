@@ -20,6 +20,7 @@ import About from './pages/About';
 import Profile from './pages/Profile';
 import ConsignmentHistory from './pages/ConsignmentHistory';
 import News from './pages/News';
+import Flights from './pages/Flights';
 import BottomNav from './components/BottomNav';
 
 // Context
@@ -129,6 +130,7 @@ export default function App() {
           <Route path="/profile" element={user ? <Profile /> : <Navigate to="/login" />} />
           <Route path="/updates" element={user ? <ConsignmentHistory /> : <Navigate to="/login" />} />
           <Route path="/news" element={<News />} />
+          <Route path="/flights" element={<Flights />} />
 
           {/* Admin Routes */}
           <Route

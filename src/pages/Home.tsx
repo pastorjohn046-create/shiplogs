@@ -79,15 +79,15 @@ export default function Home() {
           
           <div className="flex items-center gap-10">
             <div className="hidden lg:flex items-center gap-10">
-              {['Services', 'Network', 'About'].map((item) => (
+              {['Services', 'Network', 'About', 'Flights'].map((item) => (
                 <button 
                   key={item}
-                  onClick={() => navigate(`/${item.toLowerCase()}`)}
+                  onClick={() => navigate(item === 'Flights' ? '/flights' : `/${item.toLowerCase()}`)}
                   className={`text-xs font-black uppercase tracking-[0.2em] transition-all hover:text-orange-500 ${
                     isScrolled ? 'text-slate-600' : 'text-white/80 hover:text-white'
                   }`}
                 >
-                  {item}
+                  {item === 'Flights' ? 'Flight Status' : item}
                 </button>
               ))}
             </div>
@@ -130,16 +130,16 @@ export default function Home() {
               exit={{ opacity: 0, y: -20, scale: 0.95 }}
               className="absolute top-full left-4 right-4 mt-4 nexus-glass rounded-[2.5rem] shadow-2xl p-8 flex flex-col gap-4 lg:hidden border border-white/20"
             >
-              {['Services', 'Network', 'About'].map((item) => (
+              {['Services', 'Network', 'About', 'Flights'].map((item) => (
                 <button 
                   key={item}
                   className="w-full text-left py-5 text-2xl font-black text-[#001f3f] uppercase tracking-tighter italic border-b border-slate-100"
                   onClick={() => {
-                    navigate(`/${item.toLowerCase()}`);
+                    navigate(item === 'Flights' ? '/flights' : `/${item.toLowerCase()}`);
                     setIsMobileMenuOpen(false);
                   }}
                 >
-                  {item}
+                  {item === 'Flights' ? 'Flight Status' : item}
                 </button>
               ))}
               <div className="pt-4 flex flex-col gap-4">

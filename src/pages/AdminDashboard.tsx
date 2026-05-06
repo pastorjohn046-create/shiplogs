@@ -39,6 +39,10 @@ export default function AdminDashboard() {
     weight: '',
     dimensions: '',
     estimatedDelivery: '',
+    flightNumber: '',
+    airline: '',
+    departureTime: '',
+    arrivalTime: '',
   });
   const navigate = useNavigate();
 
@@ -98,6 +102,10 @@ export default function AdminDashboard() {
         userId: newShipment.userId || '',
         status: newShipment.status as any,
         estimatedDelivery: newShipment.estimatedDelivery || '',
+        flightNumber: newShipment.type === 'Flight' ? newShipment.flightNumber : undefined,
+        airline: newShipment.type === 'Flight' ? newShipment.airline : undefined,
+        departureTime: newShipment.type === 'Flight' ? newShipment.departureTime : undefined,
+        arrivalTime: newShipment.type === 'Flight' ? newShipment.arrivalTime : undefined,
       } as any);
 
       setIsModalOpen(false);
@@ -115,6 +123,10 @@ export default function AdminDashboard() {
         weight: '',
         dimensions: '',
         estimatedDelivery: '',
+        flightNumber: '',
+        airline: '',
+        departureTime: '',
+        arrivalTime: '',
       });
       fetchShipments();
     } catch (error) {
@@ -775,6 +787,55 @@ export default function AdminDashboard() {
                     />
                   </div>
                 </div>
+
+                {newShipment.type === 'Flight' && (
+                  <motion.div 
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    className="grid grid-cols-1 md:grid-cols-2 gap-6"
+                  >
+                    <div className="space-y-2">
+                      <label className="text-xs font-black uppercase tracking-widest text-gray-400">Flight Number</label>
+                      <input 
+                        type="text" 
+                        value={newShipment.flightNumber}
+                        onChange={(e) => setNewShipment({...newShipment, flightNumber: e.target.value})}
+                        placeholder="e.g. EK202"
+                        className="w-full px-6 py-4 bg-gray-50 rounded-2xl outline-none focus:ring-2 ring-orange-500/20 font-medium"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs font-black uppercase tracking-widest text-gray-400">Airline</label>
+                      <input 
+                        type="text" 
+                        value={newShipment.airline}
+                        onChange={(e) => setNewShipment({...newShipment, airline: e.target.value})}
+                        placeholder="e.g. Emirates"
+                        className="w-full px-6 py-4 bg-gray-50 rounded-2xl outline-none focus:ring-2 ring-orange-500/20 font-medium"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs font-black uppercase tracking-widest text-gray-400">Departure Time</label>
+                      <input 
+                        type="text" 
+                        value={newShipment.departureTime}
+                        onChange={(e) => setNewShipment({...newShipment, departureTime: e.target.value})}
+                        placeholder="e.g. 14:30"
+                        className="w-full px-6 py-4 bg-gray-50 rounded-2xl outline-none focus:ring-2 ring-orange-500/20 font-medium"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs font-black uppercase tracking-widest text-gray-400">Arrival Time (ETA)</label>
+                      <input 
+                        type="text" 
+                        value={newShipment.arrivalTime}
+                        onChange={(e) => setNewShipment({...newShipment, arrivalTime: e.target.value})}
+                        placeholder="e.g. 18:45"
+                        className="w-full px-6 py-4 bg-gray-50 rounded-2xl outline-none focus:ring-2 ring-orange-500/20 font-medium"
+                      />
+                    </div>
+                  </motion.div>
+                )}
 
                 <div className="space-y-2">
                   <label className="text-xs font-black uppercase tracking-widest text-gray-400">Product Name</label>

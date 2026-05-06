@@ -182,83 +182,165 @@ export default function Tracking() {
 
       <main className="max-w-5xl mx-auto px-4 md:px-6 mt-8 md:mt-12 pb-32">
         {/* Tracking ID Card: Tactical Overview */}
-        <div className="bg-white rounded-[2rem] md:rounded-[3rem] shadow-2xl shadow-slate-200/50 border border-slate-100 p-6 md:p-14 mb-8 md:mb-12 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-orange-600/5 rounded-full -mr-32 -mt-32 blur-3xl opacity-50" />
-          
-          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 md:gap-12 relative z-10">
-            <div className="flex items-center gap-5 md:gap-8 w-full sm:w-auto">
-              <div className={`p-5 md:p-8 rounded-3xl md:rounded-[2.5rem] shadow-xl ${shipment.type === 'Flight' ? 'bg-[#001f3f] text-white' : 'bg-orange-600 text-white'}`}>
-                {shipment.type === 'Flight' ? <Plane className="w-8 h-8 md:w-12 md:h-12" /> : <Truck className="w-8 h-8 md:w-12 md:h-12" />}
-              </div>
-              <div className="min-w-0">
-                <span className="text-[8px] md:text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] md:tracking-[0.4em] mb-2 md:mb-4 block">Deployment ID ({shipment.type})</span>
-                <h2 className="text-2xl md:text-6xl font-black text-[#001f3f] tracking-tighter italic uppercase truncate">{shipment.trackingId}</h2>
-              </div>
+        {shipment.type === 'Flight' ? (
+          /* Flight Ticket UI */
+          <div className="bg-white rounded-[2rem] md:rounded-[3rem] shadow-2xl shadow-slate-200/50 border border-slate-100 overflow-hidden mb-8 md:mb-12">
+            <div className="bg-[#001f3f] px-6 md:px-14 py-8 md:py-12 flex flex-col md:flex-row justify-between items-center relative overflow-hidden">
+               <div className="absolute top-0 right-0 w-64 h-64 bg-orange-600/10 rounded-full -mr-32 -mt-32 blur-3xl" />
+               <div className="flex items-center gap-4 md:gap-8 z-10">
+                  <div className="p-4 md:p-6 bg-white/10 rounded-2xl backdrop-blur-md">
+                    <Plane className="w-8 h-8 md:w-12 md:h-12 text-orange-500" />
+                  </div>
+                  <div>
+                    <span className="text-[8px] md:text-[10px] font-black text-orange-400 uppercase tracking-widest block mb-1">Boarding Pass / Air Waybill</span>
+                    <h2 className="text-2xl md:text-5xl font-black text-white tracking-tighter italic uppercase">{shipment.trackingId}</h2>
+                  </div>
+               </div>
+               <div className="mt-6 md:mt-0 flex flex-col md:items-end z-10 w-full md:w-auto">
+                  <div className="bg-orange-600 px-6 py-2.5 rounded-xl text-white text-[10px] md:text-xs font-black uppercase tracking-widest shadow-xl shadow-orange-600/20 text-center">
+                    {shipment.status}
+                  </div>
+                  <span className="text-white/40 text-[8px] md:text-[10px] font-black uppercase mt-2 text-center md:text-right w-full">Priority Air Freight</span>
+               </div>
             </div>
-            <div className="flex flex-col items-start lg:items-end gap-3 w-full sm:w-auto">
-              <div className="flex items-center gap-3 bg-slate-50 px-6 md:px-8 py-3.5 md:py-4 rounded-2xl md:rounded-3xl border border-slate-100 w-full sm:min-w-[240px] justify-center">
-                <div className="w-2.5 h-2.5 md:w-3 md:h-3 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-[#001f3f] font-black uppercase text-xs md:text-sm tracking-widest italic">{shipment.status}</span>
-              </div>
-              <span className="text-[8px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest px-2 sm:px-8 text-center sm:text-right w-full sm:w-auto">Last: {shipment.history?.[shipment.history.length-1]?.location || 'Peak HQ'}</span>
+
+            <div className="p-6 md:p-14 relative">
+               {/* Perforated Divider Visual */}
+               <div className="absolute top-0 left-0 w-full h-8 flex items-center justify-between pointer-events-none px-4 -mt-4">
+                  <div className="w-8 h-8 bg-gray-50 rounded-full -ml-8 border-r border-slate-100" />
+                  <div className="flex-1 border-t-2 border-dashed border-slate-100 mx-2" />
+                  <div className="w-8 h-8 bg-gray-50 rounded-full -mr-8 border-l border-slate-100" />
+               </div>
+
+               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 mt-4">
+                  <div className="space-y-1">
+                    <span className="text-[7px] md:text-[9px] font-black text-slate-300 uppercase tracking-widest block">Carrier</span>
+                    <p className="text-lg md:text-xl font-black text-[#001f3f] uppercase italic">{shipment.airline || 'Peak Air Ops'}</p>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-[7px] md:text-[9px] font-black text-slate-300 uppercase tracking-widest block">Flight No.</span>
+                    <p className="text-lg md:text-xl font-black text-[#001f3f] uppercase italic">{shipment.flightNumber || 'PK-' + Math.floor(100+Math.random()*900)}</p>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-[7px] md:text-[9px] font-black text-slate-300 uppercase tracking-widest block">Origin Terminal</span>
+                    <p className="text-lg md:text-xl font-black text-[#001f3f] uppercase italic">{shipment.origin}</p>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-[7px] md:text-[9px] font-black text-slate-300 uppercase tracking-widest block">Target Hub</span>
+                    <p className="text-lg md:text-xl font-black text-[#001f3f] uppercase italic">{shipment.destination}</p>
+                  </div>
+               </div>
+
+               <div className="mt-12 flex flex-col lg:flex-row justify-between items-center gap-10 bg-slate-50 p-8 md:p-12 rounded-[2.5rem] border border-slate-100">
+                  <div className="flex items-center gap-8 w-full md:w-auto">
+                    <div className="text-center">
+                      <span className="text-[7px] md:text-[8px] font-black text-slate-400 uppercase tracking-widest block mb-2">Gate Departure</span>
+                      <p className="text-2xl font-black text-[#001f3f] italic uppercase">{shipment.departureTime || 'TBC'}</p>
+                    </div>
+                    <div className="flex-1 flex flex-col items-center px-4 md:px-8">
+                       <div className="w-full h-px bg-slate-200 relative">
+                          <Plane className="w-5 h-5 text-orange-600 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-50 px-1" />
+                       </div>
+                       <span className="text-[6px] font-black text-slate-300 uppercase tracking-[0.4em] mt-3 animate-pulse">In Flight</span>
+                    </div>
+                    <div className="text-center">
+                      <span className="text-[7px] md:text-[8px] font-black text-slate-400 uppercase tracking-widest block mb-2">Arrival (ETA)</span>
+                      <p className="text-2xl font-black text-orange-600 italic uppercase">{shipment.arrivalTime || 'TBC'}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-6 w-full lg:w-auto border-t lg:border-t-0 lg:border-l border-slate-200 pt-8 lg:pt-0 lg:pl-12">
+                     <div className="bg-white p-3 rounded-2xl shadow-sm">
+                        <div className="w-16 md:w-24 h-16 md:w-24 bg-[url('https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=id')] bg-contain opacity-80" style={{backgroundImage: `url('https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${shipment.trackingId}')`}} />
+                     </div>
+                     <div className="flex flex-col">
+                        <span className="text-[7px] font-black text-slate-400 uppercase tracking-[0.3em] mb-1">Security Token</span>
+                        <p className="text-[9px] font-mono font-bold text-[#001f3f] uppercase">PX-{shipment.id.substring(0,8)}</p>
+                     </div>
+                  </div>
+               </div>
             </div>
           </div>
-
-          {/* Progress Timeline: Industrial visualization */}
-          <div className="mt-12 md:mt-24 relative px-0 md:px-8">
-            <div className="hidden md:block">
-              <div className="absolute top-1/2 left-0 w-full h-2 bg-slate-50 -translate-y-1/2 rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-orange-600 transition-all duration-1000 ease-out shadow-[0_0_20px_rgba(249,115,22,0.4)]"
-                  style={{ width: `${(currentStepIndex / (STATUS_STEPS.length - 1)) * 100}%` }}
-                />
+        ) : (
+          /* Standard Tactical Overview */
+          <div className="bg-white rounded-[2rem] md:rounded-[3rem] shadow-2xl shadow-slate-200/50 border border-slate-100 p-6 md:p-14 mb-8 md:mb-12 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-orange-600/5 rounded-full -mr-32 -mt-32 blur-3xl opacity-50" />
+            
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 md:gap-12 relative z-10">
+              <div className="flex items-center gap-5 md:gap-8 w-full sm:w-auto">
+                <div className={`p-5 md:p-8 rounded-3xl md:rounded-[2.5rem] shadow-xl ${shipment.type === 'Flight' ? 'bg-[#001f3f] text-white' : 'bg-orange-600 text-white'}`}>
+                  {shipment.type === 'Flight' ? <Plane className="w-8 h-8 md:w-12 md:h-12" /> : <Truck className="w-8 h-8 md:w-12 md:h-12" />}
+                </div>
+                <div className="min-w-0">
+                  <span className="text-[8px] md:text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] md:tracking-[0.4em] mb-2 md:mb-4 block">Deployment ID ({shipment.type})</span>
+                  <h2 className="text-2xl md:text-6xl font-black text-[#001f3f] tracking-tighter italic uppercase truncate">{shipment.trackingId}</h2>
+                </div>
               </div>
-              
-              <div className="relative flex justify-between items-center text-center">
-                {STATUS_STEPS.map((step, index) => {
-                  const isCompleted = index <= currentStepIndex;
-                  const isCurrent = index === currentStepIndex;
-                  
-                  return (
-                    <div key={step} className="flex flex-col items-center group">
-                      <div className={`w-16 h-16 rounded-[1.5rem] flex items-center justify-center z-10 transition-all duration-500 ${
-                        isCompleted ? 'bg-[#001f3f] text-white scale-110 shadow-2xl rotate-3 border-2 border-orange-600/20' : 'bg-white text-slate-200 border-2 border-slate-100'
-                      }`}>
-                        {isCompleted ? <Zap className="w-8 h-8 text-orange-500" /> : <div className="w-4 h-4 bg-slate-100 rounded-full" />}
-                      </div>
-                      <div className={`mt-8 text-[11px] font-black uppercase tracking-[0.2em] max-w-[100px] transition-colors duration-500 ${
-                        isCurrent ? 'text-orange-600' : isCompleted ? 'text-[#001f3f]' : 'text-slate-300'
-                      }`}>
-                        {step}
-                      </div>
-                    </div>
-                  );
-                })}
+              <div className="flex flex-col items-start lg:items-end gap-3 w-full sm:w-auto">
+                <div className="flex items-center gap-3 bg-slate-50 px-6 md:px-8 py-3.5 md:py-4 rounded-2xl md:rounded-3xl border border-slate-100 w-full sm:min-w-[240px] justify-center">
+                  <div className="w-2.5 h-2.5 md:w-3 md:h-3 bg-green-500 rounded-full animate-pulse"></div>
+                  <span className="text-[#001f3f] font-black uppercase text-xs md:text-sm tracking-widest italic">{shipment.status}</span>
+                </div>
+                <span className="text-[8px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest px-2 sm:px-8 text-center sm:text-right w-full sm:w-auto">Last: {shipment.history?.[shipment.history.length-1]?.location || 'Peak HQ'}</span>
               </div>
             </div>
 
-            {/* Mobile Adaptive Stepper */}
-            <div className="md:hidden">
-              <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="bg-[#001f3f] p-3 rounded-xl">
-                    <Zap className="w-6 h-6 text-orange-500" />
-                  </div>
-                  <div className="text-right">
-                    <span className="block text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Status Phase</span>
-                    <span className="text-base font-black text-[#001f3f] uppercase italic">{currentStepIndex + 1} / {STATUS_STEPS.length}</span>
-                  </div>
-                </div>
-                <div className="h-2.5 bg-slate-200 rounded-full overflow-hidden">
+            {/* Progress Timeline: Industrial visualization */}
+            <div className="mt-12 md:mt-24 relative px-0 md:px-8">
+              <div className="hidden md:block">
+                <div className="absolute top-1/2 left-0 w-full h-2 bg-slate-50 -translate-y-1/2 rounded-full overflow-hidden">
                   <div 
-                    className="h-full bg-orange-600 transition-all duration-1000"
+                    className="h-full bg-orange-600 transition-all duration-1000 ease-out shadow-[0_0_20px_rgba(249,115,22,0.4)]"
                     style={{ width: `${(currentStepIndex / (STATUS_STEPS.length - 1)) * 100}%` }}
                   />
                 </div>
+                
+                <div className="relative flex justify-between items-center text-center">
+                  {STATUS_STEPS.map((step, index) => {
+                    const isCompleted = index <= currentStepIndex;
+                    const isCurrent = index === currentStepIndex;
+                    
+                    return (
+                      <div key={step} className="flex flex-col items-center group">
+                        <div className={`w-16 h-16 rounded-[1.5rem] flex items-center justify-center z-10 transition-all duration-500 ${
+                          isCompleted ? 'bg-[#001f3f] text-white scale-110 shadow-2xl rotate-3 border-2 border-orange-600/20' : 'bg-white text-slate-200 border-2 border-slate-100'
+                        }`}>
+                          {isCompleted ? <Zap className="w-8 h-8 text-orange-500" /> : <div className="w-4 h-4 bg-slate-100 rounded-full" />}
+                        </div>
+                        <div className={`mt-8 text-[11px] font-black uppercase tracking-[0.2em] max-w-[100px] transition-colors duration-500 ${
+                          isCurrent ? 'text-orange-600' : isCompleted ? 'text-[#001f3f]' : 'text-slate-300'
+                        }`}>
+                          {step}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Mobile Adaptive Stepper */}
+              <div className="md:hidden">
+                <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="bg-[#001f3f] p-3 rounded-xl">
+                      <Zap className="w-6 h-6 text-orange-500" />
+                    </div>
+                    <div className="text-right">
+                      <span className="block text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Status Phase</span>
+                      <span className="text-base font-black text-[#001f3f] uppercase italic">{currentStepIndex + 1} / {STATUS_STEPS.length}</span>
+                    </div>
+                  </div>
+                  <div className="h-2.5 bg-slate-200 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-orange-600 transition-all duration-1000"
+                      style={{ width: `${(currentStepIndex / (STATUS_STEPS.length - 1)) * 100}%` }}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-12">
           {/* Shipment Info: History Timeline */}

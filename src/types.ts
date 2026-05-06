@@ -40,6 +40,12 @@ export interface Shipment {
   productImage?: string; // base64
   weight?: string;
   dimensions?: string;
+  flightNumber?: string;
+  airline?: string;
+  departureTime?: string;
+  arrivalTime?: string;
+  vesselName?: string;
+  voyageNumber?: string;
   createdAt: any; // Firestore Timestamp
   updatedAt: any; // Firestore Timestamp
 }

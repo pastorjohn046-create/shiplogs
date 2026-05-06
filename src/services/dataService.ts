@@ -9,18 +9,36 @@ export interface User {
 }
 
 class DataService {
+  private async handleResponse(res: Response) {
+    if (!res.ok) {
+      let errorMessage = 'An error occurred';
+      try {
+        const errorData = await res.json();
+        errorMessage = errorData.error || errorData.message || errorMessage;
+      } catch {
+        errorMessage = `Request failed with status ${res.status}`;
+      }
+      throw new Error(errorMessage);
+    }
+    
+    const contentType = res.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      throw new Error('Server returned an unexpected response format');
+    }
+    
+    return res.json();
+  }
+
   // Shipments
   async getShipments(): Promise<Shipment[]> {
     const res = await fetch('/api/shipments');
-    if (!res.ok) throw new Error('Failed to fetch shipments');
-    return res.json();
+    return this.handleResponse(res);
   }
 
   async getShipmentByTrackingId(trackingId: string): Promise<Shipment | null> {
     const res = await fetch(`/api/shipments/${trackingId}`);
     if (res.status === 404) return null;
-    if (!res.ok) throw new Error('Failed to fetch shipment');
-    return res.json();
+    return this.handleResponse(res);
   }
 
   async createShipment(shipmentData: any): Promise<Shipment> {
@@ -29,8 +47,7 @@ class DataService {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(shipmentData)
     });
-    if (!res.ok) throw new Error('Failed to create shipment');
-    return res.json();
+    return this.handleResponse(res);
   }
 
   async updateShipment(id: string, updates: Partial<Shipment>): Promise<Shipment> {
@@ -39,27 +56,26 @@ class DataService {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(updates)
     });
-    if (!res.ok) throw new Error('Failed to update shipment');
-    return res.json();
+    return this.handleResponse(res);
   }
 
   async deleteShipment(id: string): Promise<void> {
     const res = await fetch(`/api/shipments/${id}`, { method: 'DELETE' });
-    if (!res.ok) throw new Error('Failed to delete shipment');
+    if (!res.ok) {
+      await this.handleResponse(res);
+    }
   }
 
   // Users
   async getUsers(): Promise<User[]> {
     const res = await fetch('/api/admin/users');
-    if (!res.ok) throw new Error('Failed to fetch users');
-    return res.json();
+    return this.handleResponse(res);
   }
 
   // Tickets
   async getTickets(): Promise<Ticket[]> {
     const res = await fetch('/api/tickets');
-    if (!res.ok) throw new Error('Failed to fetch tickets');
-    return res.json();
+    return this.handleResponse(res);
   }
 
   async createTicket(ticketData: any): Promise<Ticket> {
@@ -68,8 +84,7 @@ class DataService {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(ticketData)
     });
-    if (!res.ok) throw new Error('Failed to create ticket');
-    return res.json();
+    return this.handleResponse(res);
   }
 
   async addTicketMessage(id: string, message: any): Promise<Ticket> {
@@ -78,8 +93,7 @@ class DataService {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(message)
     });
-    if (!res.ok) throw new Error('Failed to send message');
-    return res.json();
+    return this.handleResponse(res);
   }
 
   async updateTicketStatus(id: string, status: string): Promise<void> {
@@ -88,7 +102,9 @@ class DataService {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status })
     });
-    if (!res.ok) throw new Error('Failed to update ticket status');
+    if (!res.ok) {
+      await this.handleResponse(res);
+    }
   }
 }
 
